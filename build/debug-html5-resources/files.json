@@ -31,6 +31,16 @@
 			"types": []
 		},
 		{
+			"name": "Kenney_Thick",
+			"files": [
+				"Kenney Thick.ttf"
+			],
+			"file_sizes": [
+				9448
+			],
+			"type": "font"
+		},
+		{
 			"name": "ShBrightness_frag",
 			"files": [
 				"ShBrightness.frag.essl",
@@ -323,6 +333,18 @@
 			"types": []
 		},
 		{
+			"name": "game_over",
+			"files": [
+				"game_over.png"
+			],
+			"file_sizes": [
+				25080
+			],
+			"type": "image",
+			"original_width": 300,
+			"original_height": 300
+		},
+		{
 			"name": "hBlurVertexShader_vert",
 			"files": [
 				"hBlurVertexShader.vert.essl",
@@ -425,6 +447,36 @@
 			"type": "image",
 			"original_width": 225,
 			"original_height": 180
+		},
+		{
+			"name": "lvl1_tmx",
+			"files": [
+				"lvl1.tmx"
+			],
+			"file_sizes": [
+				7308
+			],
+			"type": "blob"
+		},
+		{
+			"name": "lvl2_tmx",
+			"files": [
+				"lvl2.tmx"
+			],
+			"file_sizes": [
+				7089
+			],
+			"type": "blob"
+		},
+		{
+			"name": "lvl3_tmx",
+			"files": [
+				"lvl3.tmx"
+			],
+			"file_sizes": [
+				7314
+			],
+			"type": "blob"
 		},
 		{
 			"name": "mainfont",
@@ -2006,25 +2058,15 @@
 			]
 		},
 		{
-			"name": "testRoom_tmx",
-			"files": [
-				"testRoom.tmx"
-			],
-			"file_sizes": [
-				7146
-			],
-			"type": "blob"
-		},
-		{
 			"name": "tiles2",
 			"files": [
 				"tiles2.png"
 			],
 			"file_sizes": [
-				2694
+				5652
 			],
 			"type": "image",
-			"original_width": 64,
+			"original_width": 128,
 			"original_height": 416
 		},
 		{

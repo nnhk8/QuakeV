@@ -4227,6 +4227,18 @@ com_gEngine_Filter.prototype = {
 	}
 	,__class__: com_gEngine_Filter
 };
+var com_gEngine_FontData = function(fontSize) {
+	this.fontSize = 0;
+	com_gEngine_AnimationData.call(this);
+	this.fontSize = fontSize;
+};
+$hxClasses["com.gEngine.FontData"] = com_gEngine_FontData;
+com_gEngine_FontData.__name__ = "com.gEngine.FontData";
+com_gEngine_FontData.__super__ = com_gEngine_AnimationData;
+com_gEngine_FontData.prototype = $extend(com_gEngine_AnimationData.prototype,{
+	fontSize: null
+	,__class__: com_gEngine_FontData
+});
 var com_gEngine_Frame = function() {
 };
 $hxClasses["com.gEngine.Frame"] = com_gEngine_Frame;
@@ -9425,6 +9437,160 @@ com_gEngine_display_Stage.prototype = {
 	,__class__: com_gEngine_display_Stage
 	,__properties__: {set_color:"set_color",set_y:"set_y",get_y:"get_y",set_x:"set_x",get_x:"get_x"}
 };
+var com_gEngine_display_Text = function(type) {
+	this.alpha = 1;
+	this.bakedQuadCache = new kha_AlignedQuad();
+	this.sourceFontSize = 0;
+	this.fontSize = 0;
+	this.text = "";
+	com_gEngine_display_Layer.call(this);
+	this.mLetters = [];
+	this.mType = type;
+	this.sourceFontSize = this.fontSize = com_basicDisplay_SpriteSheetDB.get_i().getData(type).fontSize;
+	this.set_color(-1);
+};
+$hxClasses["com.gEngine.display.Text"] = com_gEngine_display_Text;
+com_gEngine_display_Text.__name__ = "com.gEngine.display.Text";
+com_gEngine_display_Text.findIndex = function(charCode) {
+	var blocks = kha_KravurImage.charBlocks;
+	var offset = 0;
+	var _g = 0;
+	var _g1 = blocks.length / 2 | 0;
+	while(_g < _g1) {
+		var i = _g++;
+		var start = blocks[i * 2];
+		var end = blocks[i * 2 + 1];
+		if(charCode >= start && charCode <= end) {
+			return offset + charCode - start;
+		}
+		offset += end - start + 1;
+	}
+	return 0;
+};
+com_gEngine_display_Text.__super__ = com_gEngine_display_Layer;
+com_gEngine_display_Text.prototype = $extend(com_gEngine_display_Layer.prototype,{
+	mLetters: null
+	,mType: null
+	,text: null
+	,fontSize: null
+	,smooth: null
+	,sourceFontSize: null
+	,color: null
+	,bakedQuadCache: null
+	,alpha: null
+	,set_text: function(aText) {
+		if(this.text == aText) {
+			return this.text;
+		}
+		this.text = aText;
+		var counter = 0;
+		var displayLetter;
+		var currentWordLetters = [];
+		var font = kha_Assets.fonts.get(this.mType)._get(this.fontSize);
+		var xpos = 0.;
+		var ypos = 0.;
+		var i = 0;
+		var scaleFont = this.fontSize / this.sourceFontSize;
+		var fontSize = Math.round(this.fontSize / this.sourceFontSize * this.sourceFontSize);
+		while(i < this.text.length) {
+			if(this.text.charAt(i) == "\n") {
+				++i;
+				ypos += fontSize;
+				xpos = 0;
+				this.bakedQuadCache.xadvance = 0;
+				continue;
+			}
+			var charCodeIndex = com_gEngine_display_Text.findIndex(this.text.charCodeAt(i));
+			var q = font.getBakedQuad(this.bakedQuadCache,charCodeIndex,xpos,ypos);
+			if(q != null) {
+				if(this.mLetters.length <= counter) {
+					displayLetter = new com_gEngine_display_Sprite(this.mType);
+					displayLetter.set_smooth(this.smooth);
+					displayLetter.colorMultiplication(((this.color & 16711680) >>> 16) * 0.00392156862745098,((this.color & 65280) >>> 8) * 0.00392156862745098,(this.color & 255) * 0.00392156862745098,(this.color >>> 24) * 0.00392156862745098);
+					this.addChild(displayLetter);
+					this.mLetters.push(displayLetter);
+				} else {
+					displayLetter = this.mLetters[counter];
+					if(displayLetter.parent == null) {
+						this.addChild(displayLetter);
+					}
+				}
+				++counter;
+				displayLetter.timeline.gotoAndStop(charCodeIndex);
+				currentWordLetters.push(displayLetter);
+				displayLetter.x = xpos;
+				displayLetter.y = ypos;
+				displayLetter.scaleX = displayLetter.scaleY = scaleFont;
+				xpos += q.xadvance;
+			}
+			++i;
+		}
+		var _g = counter;
+		var _g1 = this.mLetters.length;
+		while(_g < _g1) {
+			var k = _g++;
+			this.mLetters[k].removeFromParent();
+		}
+		return aText;
+	}
+	,set_smooth: function(value) {
+		var _g = 0;
+		var _g1 = this.mLetters;
+		while(_g < _g1.length) {
+			var sprite = _g1[_g];
+			++_g;
+			sprite.set_smooth(value);
+		}
+		this.smooth = value;
+		return this.smooth;
+	}
+	,getLetter: function(aId) {
+		return this.mLetters[aId];
+	}
+	,letterCount: function() {
+		return this.mLetters.length;
+	}
+	,width: function() {
+		var min = Infinity;
+		var max = -Infinity;
+		var _g = 0;
+		var _g1 = this.mLetters;
+		while(_g < _g1.length) {
+			var letter = _g1[_g];
+			++_g;
+			if(letter.x < min) {
+				min = letter.x;
+			} else if(letter.x + letter.width() > max) {
+				max = letter.x + letter.width();
+			}
+		}
+		return max - min;
+	}
+	,set_color: function(color) {
+		var _g = 0;
+		var _g1 = this.mLetters;
+		while(_g < _g1.length) {
+			var child = _g1[_g];
+			++_g;
+			child.colorMultiplication(((color & 16711680) >>> 16) * 0.00392156862745098,((color & 65280) >>> 8) * 0.00392156862745098,(color & 255) * 0.00392156862745098,(color >>> 24) * 0.00392156862745098);
+		}
+		this.color = color;
+		return color;
+	}
+	,set_alpha: function(value) {
+		this.alpha = value;
+		var _g = 0;
+		var _g1 = this.children;
+		while(_g < _g1.length) {
+			var child = _g1[_g];
+			++_g;
+			child.alpha = value;
+		}
+		return value;
+	}
+	,__class__: com_gEngine_display_Text
+	,__properties__: $extend(com_gEngine_display_Layer.prototype.__properties__,{set_alpha:"set_alpha",set_color:"set_color",set_smooth:"set_smooth",set_text:"set_text"})
+});
 var com_gEngine_display_extra_TileMapAdvanceDisplay = function(displayConstructor,widthInTiles,heightInTiles,tileWidth,tileHeight) {
 	com_gEngine_display_Layer.call(this);
 	this.displayConstructor = displayConstructor;
@@ -16536,106 +16702,6 @@ com_loading_basicResources_DataLoader.prototype = {
 	}
 	,__class__: com_loading_basicResources_DataLoader
 };
-var com_loading_basicResources_JoinAtlas = function(width,height,separation) {
-	if(separation == null) {
-		separation = 2;
-	}
-	this.loadedCounter = 0;
-	this.width = width;
-	this.height = height;
-	this.separation = separation;
-	this.resources = [];
-};
-$hxClasses["com.loading.basicResources.JoinAtlas"] = com_loading_basicResources_JoinAtlas;
-com_loading_basicResources_JoinAtlas.__name__ = "com.loading.basicResources.JoinAtlas";
-com_loading_basicResources_JoinAtlas.__interfaces__ = [com_loading_Resource];
-com_loading_basicResources_JoinAtlas.prototype = {
-	width: null
-	,height: null
-	,resources: null
-	,onFinish: null
-	,loadedCounter: null
-	,separation: null
-	,image: null
-	,add: function(resource) {
-		this.resources.push(resource);
-	}
-	,load: function(callback) {
-		this.onFinish = callback;
-		var _g = 0;
-		var _g1 = this.resources;
-		while(_g < _g1.length) {
-			var resource = _g1[_g];
-			++_g;
-			resource.load($bind(this,this.onLoad));
-		}
-		if(this.resources.length == 0) {
-			callback();
-		}
-	}
-	,loadLocal: function(callback) {
-		this.onFinish = callback;
-		var _g = 0;
-		var _g1 = this.resources;
-		while(_g < _g1.length) {
-			var resource = _g1[_g];
-			++_g;
-			resource.loadLocal($bind(this,this.onLoad));
-		}
-		if(this.resources.length == 0) {
-			callback();
-		}
-	}
-	,onLoad: function() {
-		++this.loadedCounter;
-		if(this.loadedCounter == this.resources.length) {
-			this.createAtlas();
-		}
-	}
-	,createAtlas: function() {
-		var bitmaps = [];
-		var _g = 0;
-		var _g1 = this.resources;
-		while(_g < _g1.length) {
-			var resource = _g1[_g];
-			++_g;
-			bitmaps = bitmaps.concat(resource.getBitmaps());
-		}
-		this.image = com_imageAtlas_AtlasGenerator.generate(this.width,this.height,bitmaps,this.separation);
-		var textureId = com_gEngine_GEngine.get_i().addTexture(this.image);
-		var _g = 0;
-		var _g1 = this.resources;
-		while(_g < _g1.length) {
-			var resource = _g1[_g];
-			++_g;
-			resource.update(textureId);
-		}
-		this.onFinish();
-	}
-	,unload: function() {
-		var _g = 0;
-		var _g1 = this.resources;
-		while(_g < _g1.length) {
-			var resource = _g1[_g];
-			++_g;
-			resource.unload();
-		}
-		if(this.image != null) {
-			this.image.unload();
-		}
-	}
-	,unloadLocal: function() {
-		var _g = 0;
-		var _g1 = this.resources;
-		while(_g < _g1.length) {
-			var resource = _g1[_g];
-			++_g;
-			resource.unloadLocal();
-		}
-		this.image.unload();
-	}
-	,__class__: com_loading_basicResources_JoinAtlas
-};
 var com_loading_basicResources_TilesheetLoader = function(imageName,tileWidth,tileHeight,spacing) {
 	this.imageName = imageName;
 	this.tileWidth = tileWidth;
@@ -16764,6 +16830,187 @@ com_loading_basicResources_TilesheetLoader.prototype = {
 		}
 	}
 	,__class__: com_loading_basicResources_TilesheetLoader
+};
+var com_loading_basicResources_FontLoader = function(fontName,size) {
+	com_loading_basicResources_TilesheetLoader.call(this,fontName,0,0,0);
+	this.size = size;
+};
+$hxClasses["com.loading.basicResources.FontLoader"] = com_loading_basicResources_FontLoader;
+com_loading_basicResources_FontLoader.__name__ = "com.loading.basicResources.FontLoader";
+com_loading_basicResources_FontLoader.__super__ = com_loading_basicResources_TilesheetLoader;
+com_loading_basicResources_FontLoader.prototype = $extend(com_loading_basicResources_TilesheetLoader.prototype,{
+	size: null
+	,load: function(callback) {
+		var _gthis = this;
+		kha_Assets.loadFont(this.imageName,function(font) {
+			_gthis.fromKhaFont();
+			callback();
+		},null,{ fileName : "com/loading/basicResources/FontLoader.hx", lineNumber : 30, className : "com.loading.basicResources.FontLoader", methodName : "load"});
+	}
+	,loadLocal: function(callback) {
+		this.fromKhaFont();
+		callback();
+	}
+	,tex: null
+	,fromKhaFont: function() {
+		var font = Reflect.field(kha_Assets.fonts,this.imageName);
+		var kravurImage = font._get(this.size);
+		this.tex = kravurImage.getTexture();
+		this.animation = new com_gEngine_FontData(this.size);
+		var frames = [];
+		var labels = [];
+		this.bitmaps = [];
+		var bakedQuadCache = new kha_AlignedQuad();
+		var counter = 0;
+		if(com_loading_basicResources_FontLoader.pipeline == null) {
+			com_loading_basicResources_FontLoader.pipeline = kha_graphics4_Graphics2.createTextPipeline(kha_graphics4_Graphics2.createTextVertexStructure());
+			com_loading_basicResources_FontLoader.pipeline.blendSource = 3;
+			com_loading_basicResources_FontLoader.pipeline.blendDestination = 2;
+			com_loading_basicResources_FontLoader.pipeline.alphaBlendSource = 3;
+			com_loading_basicResources_FontLoader.pipeline.alphaBlendDestination = 2;
+			com_loading_basicResources_FontLoader.pipeline.compile();
+		}
+		while(true) {
+			var q = kravurImage.getBakedQuad(bakedQuadCache,counter,0,0);
+			if(q != null) {
+				++counter;
+				var x = q.s0 * this.tex.get_realWidth() | 0;
+				var y = q.t0 * this.tex.get_realHeight() | 0;
+				var width = (q.s1 - q.s0) * this.tex.get_realWidth() | 0;
+				var height = (q.t1 - q.t0) * this.tex.get_realHeight() | 0;
+				frames.push(com_loading_basicResources_TilesheetLoader.createFrame(q.x0 | 0,q.y0 | 0,width,height,false,x,y,this.tex.get_realWidth(),this.tex.get_realHeight()));
+				var bitmap = new com_imageAtlas_Bitmap();
+				bitmap.x = x;
+				bitmap.y = y;
+				bitmap.width = width;
+				bitmap.height = height;
+				bitmap.specialPipeline = com_loading_basicResources_FontLoader.pipeline;
+				bitmap.image = this.tex;
+				this.bitmaps.push(bitmap);
+			} else {
+				break;
+			}
+		}
+		this.animation.frames = frames;
+		this.animation.name = this.imageName;
+		this.animation.labels = labels;
+		com_basicDisplay_SpriteSheetDB.get_i().add(this.animation);
+	}
+	,unload: function() {
+	}
+	,unloadLocal: function() {
+	}
+	,__class__: com_loading_basicResources_FontLoader
+});
+var com_loading_basicResources_ImageLoader = function(imageName) {
+	var description = Reflect.field(kha_Assets.images,imageName + "Description");
+	com_loading_basicResources_TilesheetLoader.call(this,imageName,description.original_width,description.original_height,0);
+};
+$hxClasses["com.loading.basicResources.ImageLoader"] = com_loading_basicResources_ImageLoader;
+com_loading_basicResources_ImageLoader.__name__ = "com.loading.basicResources.ImageLoader";
+com_loading_basicResources_ImageLoader.__super__ = com_loading_basicResources_TilesheetLoader;
+com_loading_basicResources_ImageLoader.prototype = $extend(com_loading_basicResources_TilesheetLoader.prototype,{
+	__class__: com_loading_basicResources_ImageLoader
+});
+var com_loading_basicResources_JoinAtlas = function(width,height,separation) {
+	if(separation == null) {
+		separation = 2;
+	}
+	this.loadedCounter = 0;
+	this.width = width;
+	this.height = height;
+	this.separation = separation;
+	this.resources = [];
+};
+$hxClasses["com.loading.basicResources.JoinAtlas"] = com_loading_basicResources_JoinAtlas;
+com_loading_basicResources_JoinAtlas.__name__ = "com.loading.basicResources.JoinAtlas";
+com_loading_basicResources_JoinAtlas.__interfaces__ = [com_loading_Resource];
+com_loading_basicResources_JoinAtlas.prototype = {
+	width: null
+	,height: null
+	,resources: null
+	,onFinish: null
+	,loadedCounter: null
+	,separation: null
+	,image: null
+	,add: function(resource) {
+		this.resources.push(resource);
+	}
+	,load: function(callback) {
+		this.onFinish = callback;
+		var _g = 0;
+		var _g1 = this.resources;
+		while(_g < _g1.length) {
+			var resource = _g1[_g];
+			++_g;
+			resource.load($bind(this,this.onLoad));
+		}
+		if(this.resources.length == 0) {
+			callback();
+		}
+	}
+	,loadLocal: function(callback) {
+		this.onFinish = callback;
+		var _g = 0;
+		var _g1 = this.resources;
+		while(_g < _g1.length) {
+			var resource = _g1[_g];
+			++_g;
+			resource.loadLocal($bind(this,this.onLoad));
+		}
+		if(this.resources.length == 0) {
+			callback();
+		}
+	}
+	,onLoad: function() {
+		++this.loadedCounter;
+		if(this.loadedCounter == this.resources.length) {
+			this.createAtlas();
+		}
+	}
+	,createAtlas: function() {
+		var bitmaps = [];
+		var _g = 0;
+		var _g1 = this.resources;
+		while(_g < _g1.length) {
+			var resource = _g1[_g];
+			++_g;
+			bitmaps = bitmaps.concat(resource.getBitmaps());
+		}
+		this.image = com_imageAtlas_AtlasGenerator.generate(this.width,this.height,bitmaps,this.separation);
+		var textureId = com_gEngine_GEngine.get_i().addTexture(this.image);
+		var _g = 0;
+		var _g1 = this.resources;
+		while(_g < _g1.length) {
+			var resource = _g1[_g];
+			++_g;
+			resource.update(textureId);
+		}
+		this.onFinish();
+	}
+	,unload: function() {
+		var _g = 0;
+		var _g1 = this.resources;
+		while(_g < _g1.length) {
+			var resource = _g1[_g];
+			++_g;
+			resource.unload();
+		}
+		if(this.image != null) {
+			this.image.unload();
+		}
+	}
+	,unloadLocal: function() {
+		var _g = 0;
+		var _g1 = this.resources;
+		while(_g < _g1.length) {
+			var resource = _g1[_g];
+			++_g;
+			resource.unloadLocal();
+		}
+		this.image.unload();
+	}
+	,__class__: com_loading_basicResources_JoinAtlas
 };
 var com_loading_basicResources_SpriteSheetLoader = function(imageName,tileWidth,tileHeight,spacing,animations) {
 	com_loading_basicResources_TilesheetLoader.call(this,imageName,tileWidth,tileHeight,spacing);
@@ -19251,9 +19498,63 @@ format_tmx_Tools.getTilesCountInColumnOnTileset = function(tileset) {
 format_tmx_Tools.getTilesCountInTileset = function(tileset) {
 	return Math.floor((tileset.image.width - tileset.margin * 2 + tileset.spacing) / (tileset.tileWidth + tileset.spacing)) * Math.floor((tileset.image.height - tileset.margin * 2 + tileset.spacing) / (tileset.tileHeight + tileset.spacing));
 };
+var gameObjects_Bullet = function(x,y,dir,collisionGroup) {
+	this.time = 0;
+	this.speed = 1000;
+	this.height = 10;
+	this.width = 10;
+	com_framework_utils_Entity.call(this);
+	this.display = new com_gEngine_helpers_RectangleDisplay();
+	this.display.setColor(255,0,0);
+	this.display.scaleX = this.width;
+	this.display.scaleY = this.height;
+	states_GlobalGameData.simulationLayer.addChild(this.display);
+	this.collision = new com_collision_platformer_CollisionBox();
+	this.collision.width = this.width;
+	this.collision.height = this.height;
+	this.collision.x = x - this.width * 0.5;
+	this.collision.y = y - this.height * 0.5;
+	this.collision.velocityX = dir.x * this.speed;
+	this.collision.velocityY = dir.y * this.speed;
+	this.collision.userData = this;
+	collisionGroup.add(this.collision);
+};
+$hxClasses["gameObjects.Bullet"] = gameObjects_Bullet;
+gameObjects_Bullet.__name__ = "gameObjects.Bullet";
+gameObjects_Bullet.__super__ = com_framework_utils_Entity;
+gameObjects_Bullet.prototype = $extend(com_framework_utils_Entity.prototype,{
+	display: null
+	,collision: null
+	,width: null
+	,height: null
+	,speed: null
+	,time: null
+	,update: function(dt) {
+		this.time += dt;
+		com_framework_utils_Entity.prototype.update.call(this,dt);
+		this.collision.update(dt);
+		if(this.time > 4) {
+			this.die();
+		}
+	}
+	,render: function() {
+		com_framework_utils_Entity.prototype.render.call(this);
+		this.display.x = this.collision.x;
+		this.display.y = this.collision.y;
+	}
+	,destroy: function() {
+		com_framework_utils_Entity.prototype.destroy.call(this);
+		this.display.removeFromParent();
+		this.collision.removeFromParent();
+	}
+	,__class__: gameObjects_Bullet
+});
 var gameObjects_ChivitoBoy = function(x,y,layer) {
+	this.facingDir = new kha_math_FastVector2(1,0);
+	this.speed = 100;
 	this.lastWallGrabing = 0;
 	this.maxSpeed = 200;
+	this.fly = false;
 	com_framework_utils_Entity.call(this);
 	this.display = new com_gEngine_display_Sprite("hero");
 	this.display.set_smooth(false);
@@ -19273,6 +19574,8 @@ var gameObjects_ChivitoBoy = function(x,y,layer) {
 	this.collision.maxVelocityX = 500;
 	this.collision.maxVelocityY = 800;
 	this.collision.dragX = 0.9;
+	this.collision.dragY = 0.9;
+	this.bulletsCollision = new com_collision_platformer_CollisionGroup();
 };
 $hxClasses["gameObjects.ChivitoBoy"] = gameObjects_ChivitoBoy;
 gameObjects_ChivitoBoy.__name__ = "gameObjects.ChivitoBoy";
@@ -19280,9 +19583,13 @@ gameObjects_ChivitoBoy.__super__ = com_framework_utils_Entity;
 gameObjects_ChivitoBoy.prototype = $extend(com_framework_utils_Entity.prototype,{
 	display: null
 	,collision: null
+	,fly: null
+	,bulletsCollision: null
 	,maxSpeed: null
 	,lastWallGrabing: null
 	,sideTouching: null
+	,speed: null
+	,facingDir: null
 	,update: function(dt) {
 		if(!this.collision.isTouching(8) && (this.collision.isTouching(1) || this.collision.isTouching(2))) {
 			this.lastWallGrabing = 0;
@@ -19294,8 +19601,12 @@ gameObjects_ChivitoBoy.prototype = $extend(com_framework_utils_Entity.prototype,
 		} else {
 			this.lastWallGrabing += dt;
 		}
-		com_framework_utils_Entity.prototype.update.call(this,dt);
+		if(com_framework_utils_Input.i.isKeyCodePressed(88)) {
+			var bullet = new gameObjects_Bullet(this.collision.x + this.collision.width * 0.5,this.collision.y + this.collision.height * 0.5,this.facingDir,this.bulletsCollision);
+			this.addChild(bullet);
+		}
 		this.collision.update(dt);
+		com_framework_utils_Entity.prototype.update.call(this,dt);
 	}
 	,render: function() {
 		var s = Math.abs(this.collision.velocityX / this.collision.maxVelocityX);
@@ -19317,7 +19628,10 @@ gameObjects_ChivitoBoy.prototype = $extend(com_framework_utils_Entity.prototype,
 		this.display.y = this.collision.y;
 	}
 	,onButtonChange: function(id,value) {
+		var dir_x = 0;
+		var dir_y = 0;
 		if(id == 14) {
+			dir_x += -1;
 			if(value == 1) {
 				this.collision.accelerationX = -this.maxSpeed * 4;
 				this.display.scaleX = Math.abs(this.display.scaleX);
@@ -19326,6 +19640,7 @@ gameObjects_ChivitoBoy.prototype = $extend(com_framework_utils_Entity.prototype,
 			}
 		}
 		if(id == 15) {
+			++dir_x;
 			if(value == 1) {
 				this.collision.accelerationX = this.maxSpeed * 4;
 				this.display.scaleX = -Math.abs(this.display.scaleX);
@@ -19333,19 +19648,47 @@ gameObjects_ChivitoBoy.prototype = $extend(com_framework_utils_Entity.prototype,
 				this.collision.accelerationX = 0;
 			}
 		}
+		if(id == 12) {
+			dir_y += -1;
+		}
+		if(id == 13) {
+			++dir_y;
+		}
 		if(id == 0) {
 			if(value == 1) {
-				if(this.collision.isTouching(8)) {
-					this.collision.velocityY = -1000;
+				if(this.fly) {
+					this.collision.velocityY = -300;
+				} else if(this.collision.isTouching(8)) {
+					this.collision.velocityY = -500;
 				} else if(!this.collision.isTouching(8) && (this.collision.isTouching(1) || this.collision.isTouching(2)) || this.lastWallGrabing < 0.2) {
 					if(this.sideTouching == 1) {
-						this.collision.velocityX = 500;
+						this.collision.velocityX = 400;
 					} else {
-						this.collision.velocityX = -500;
+						this.collision.velocityX = -400;
 					}
-					this.collision.velocityY = -1000;
+					this.collision.velocityY = -700;
 				}
 			}
+		}
+		if(Math.sqrt(dir_x * dir_x + dir_y * dir_y) != 0) {
+			var x = dir_x;
+			var y = dir_y;
+			if(y == null) {
+				y = 0;
+			}
+			if(x == null) {
+				x = 0;
+			}
+			var normalizeDir_x = x;
+			var normalizeDir_y = y;
+			var currentLength = Math.sqrt(normalizeDir_x * normalizeDir_x + normalizeDir_y * normalizeDir_y);
+			if(currentLength != 0) {
+				var mul = 1 / currentLength;
+				normalizeDir_x *= mul;
+				normalizeDir_y *= mul;
+			}
+			this.facingDir.x = normalizeDir_x;
+			this.facingDir.y = normalizeDir_y;
 		}
 	}
 	,isWallGrabing: function() {
@@ -19361,7 +19704,81 @@ gameObjects_ChivitoBoy.prototype = $extend(com_framework_utils_Entity.prototype,
 	}
 	,onAxisChange: function(id,value) {
 	}
+	,destroy: function() {
+		com_framework_utils_Entity.prototype.destroy.call(this);
+		this.display.removeFromParent();
+	}
 	,__class__: gameObjects_ChivitoBoy
+});
+var gameObjects_Invader = function(x,y,layer,collisionGroup) {
+	this.SPEED = 80;
+	com_framework_utils_Entity.call(this);
+	this.display = new com_gEngine_helpers_RectangleDisplay();
+	this.display.scaleX = 50;
+	this.display.scaleY = 50;
+	this.display.pivotX = 0.5;
+	this.display.pivotY = 0.5;
+	this.display.x = x;
+	this.display.y = y;
+	this.display.setColor(0,255,0);
+	layer.addChild(this.display);
+	this.collision = new com_collision_platformer_CollisionBox();
+	this.collision.width = 40;
+	this.collision.height = 40;
+	this.collision.x = x;
+	this.collision.y = y;
+	collisionGroup.add(this.collision);
+	this.collision.userData = this;
+	this.facingDir = new kha_math_FastVector2(1,0);
+};
+$hxClasses["gameObjects.Invader"] = gameObjects_Invader;
+gameObjects_Invader.__name__ = "gameObjects.Invader";
+gameObjects_Invader.__super__ = com_framework_utils_Entity;
+gameObjects_Invader.prototype = $extend(com_framework_utils_Entity.prototype,{
+	display: null
+	,collision: null
+	,facingDir: null
+	,SPEED: null
+	,update: function(dt) {
+		com_framework_utils_Entity.prototype.update.call(this,dt);
+		this.collision.update(dt);
+		this.facingDir.x = states_GlobalGameData.chivito.collision.x - this.collision.x;
+		this.facingDir.y = states_GlobalGameData.chivito.collision.y - this.collision.y;
+		var _this = this.facingDir;
+		var _this1 = this.facingDir;
+		var x = _this1.x;
+		var y = _this1.y;
+		if(y == null) {
+			y = 0;
+		}
+		if(x == null) {
+			x = 0;
+		}
+		var v_x = x;
+		var v_y = y;
+		var currentLength = Math.sqrt(v_x * v_x + v_y * v_y);
+		if(currentLength != 0) {
+			var mul = 1 / currentLength;
+			v_x *= mul;
+			v_y *= mul;
+		}
+		_this.x = v_x;
+		_this.y = v_y;
+		this.collision.velocityX = this.facingDir.x * this.SPEED;
+		this.collision.velocityY = this.facingDir.y * this.SPEED;
+		this.display.set_rotation(Math.atan2(this.facingDir.y,this.facingDir.x));
+	}
+	,render: function() {
+		com_framework_utils_Entity.prototype.render.call(this);
+		this.display.x = this.collision.x + this.collision.width * 0.5;
+		this.display.y = this.collision.y + this.collision.height * 0.5;
+	}
+	,destroy: function() {
+		com_framework_utils_Entity.prototype.destroy.call(this);
+		this.display.removeFromParent();
+		this.collision.removeFromParent();
+	}
+	,__class__: gameObjects_Invader
 });
 var haxe_IMap = function() { };
 $hxClasses["haxe.IMap"] = haxe_IMap;
@@ -22012,69 +22429,6 @@ haxe_zip_InflateImpl.prototype = {
 	}
 	,__class__: haxe_zip_InflateImpl
 };
-var helpers_Tray = function(aMap) {
-	this.mMap = aMap;
-};
-$hxClasses["helpers.Tray"] = helpers_Tray;
-helpers_Tray.__name__ = "helpers.Tray";
-helpers_Tray.prototype = {
-	mMap: null
-	,setContactPosition: function(x,y,direction) {
-		var xIndex = x / 32 | 0;
-		var yIndex = y / 32 | 0;
-		var type = this.mMap.getTile(xIndex,yIndex);
-		if(type != 0) {
-			if((direction & 8) > 0) {
-				switch(type) {
-				case 5:
-					type = 12;
-					break;
-				case 8:
-					type = 11;
-					break;
-				case 9:
-					type = 6;
-					break;
-				case 10:
-					type = 7;
-					break;
-				}
-			} else if((direction & 2) > 0) {
-				switch(type) {
-				case 5:
-					type = 10;
-					break;
-				case 6:
-					type = 11;
-					break;
-				case 9:
-					type = 8;
-					break;
-				case 12:
-					type = 7;
-					break;
-				}
-			} else if((direction & 1) > 0) {
-				switch(type) {
-				case 5:
-					type = 9;
-					break;
-				case 7:
-					type = 11;
-					break;
-				case 10:
-					type = 8;
-					break;
-				case 12:
-					type = 6;
-					break;
-				}
-			}
-			this.mMap.setTile(xIndex,yIndex,type);
-		}
-	}
-	,__class__: helpers_Tray
-};
 var js_Boot = function() { };
 $hxClasses["js.Boot"] = js_Boot;
 js_Boot.__name__ = "js.Boot";
@@ -22294,21 +22648,38 @@ js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl = function(begin,end) {
 	return resultArray.buffer;
 };
 var kha__$Assets_ImageList = function() {
-	this.names = ["hero","tiles2"];
-	this.tiles2Size = 2694;
-	this.tiles2Description = { name : "tiles2", original_height : 416, file_sizes : [2694], original_width : 64, files : ["tiles2.png"], type : "image"};
+	this.names = ["game_over","hero","tiles2"];
+	this.tiles2Size = 5652;
+	this.tiles2Description = { name : "tiles2", original_height : 416, file_sizes : [5652], original_width : 128, files : ["tiles2.png"], type : "image"};
 	this.tiles2Name = "tiles2";
 	this.tiles2 = null;
 	this.heroSize = 16820;
 	this.heroDescription = { name : "hero", original_height : 180, file_sizes : [16820], original_width : 225, files : ["hero.png"], type : "image"};
 	this.heroName = "hero";
 	this.hero = null;
+	this.game_overSize = 25080;
+	this.game_overDescription = { name : "game_over", original_height : 300, file_sizes : [25080], original_width : 300, files : ["game_over.png"], type : "image"};
+	this.game_overName = "game_over";
+	this.game_over = null;
 };
 $hxClasses["kha._Assets.ImageList"] = kha__$Assets_ImageList;
 kha__$Assets_ImageList.__name__ = "kha._Assets.ImageList";
 kha__$Assets_ImageList.prototype = {
 	get: function(name) {
 		return Reflect.field(this,name);
+	}
+	,game_over: null
+	,game_overName: null
+	,game_overDescription: null
+	,game_overSize: null
+	,game_overLoad: function(done,failure) {
+		kha_Assets.loadImage("game_over",function(image) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 136, className : "kha._Assets.ImageList", methodName : "game_overLoad"});
+	}
+	,game_overUnload: function() {
+		this.game_over.unload();
+		this.game_over = null;
 	}
 	,hero: null
 	,heroName: null
@@ -22352,11 +22723,19 @@ kha__$Assets_SoundList.prototype = {
 	,__class__: kha__$Assets_SoundList
 };
 var kha__$Assets_BlobList = function() {
-	this.names = ["testRoom_tmx"];
-	this.testRoom_tmxSize = 7146;
-	this.testRoom_tmxDescription = { name : "testRoom_tmx", file_sizes : [7146], files : ["testRoom.tmx"], type : "blob"};
-	this.testRoom_tmxName = "testRoom_tmx";
-	this.testRoom_tmx = null;
+	this.names = ["lvl1_tmx","lvl2_tmx","lvl3_tmx"];
+	this.lvl3_tmxSize = 7314;
+	this.lvl3_tmxDescription = { name : "lvl3_tmx", file_sizes : [7314], files : ["lvl3.tmx"], type : "blob"};
+	this.lvl3_tmxName = "lvl3_tmx";
+	this.lvl3_tmx = null;
+	this.lvl2_tmxSize = 7089;
+	this.lvl2_tmxDescription = { name : "lvl2_tmx", file_sizes : [7089], files : ["lvl2.tmx"], type : "blob"};
+	this.lvl2_tmxName = "lvl2_tmx";
+	this.lvl2_tmx = null;
+	this.lvl1_tmxSize = 7308;
+	this.lvl1_tmxDescription = { name : "lvl1_tmx", file_sizes : [7308], files : ["lvl1.tmx"], type : "blob"};
+	this.lvl1_tmxName = "lvl1_tmx";
+	this.lvl1_tmx = null;
 };
 $hxClasses["kha._Assets.BlobList"] = kha__$Assets_BlobList;
 kha__$Assets_BlobList.__name__ = "kha._Assets.BlobList";
@@ -22364,34 +22743,77 @@ kha__$Assets_BlobList.prototype = {
 	get: function(name) {
 		return Reflect.field(this,name);
 	}
-	,testRoom_tmx: null
-	,testRoom_tmxName: null
-	,testRoom_tmxDescription: null
-	,testRoom_tmxSize: null
-	,testRoom_tmxLoad: function(done,failure) {
-		kha_Assets.loadBlob("testRoom_tmx",function(blob) {
+	,lvl1_tmx: null
+	,lvl1_tmxName: null
+	,lvl1_tmxDescription: null
+	,lvl1_tmxSize: null
+	,lvl1_tmxLoad: function(done,failure) {
+		kha_Assets.loadBlob("lvl1_tmx",function(blob) {
 			done();
-		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 144, className : "kha._Assets.BlobList", methodName : "testRoom_tmxLoad"});
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 144, className : "kha._Assets.BlobList", methodName : "lvl1_tmxLoad"});
 	}
-	,testRoom_tmxUnload: function() {
-		this.testRoom_tmx.unload();
-		this.testRoom_tmx = null;
+	,lvl1_tmxUnload: function() {
+		this.lvl1_tmx.unload();
+		this.lvl1_tmx = null;
+	}
+	,lvl2_tmx: null
+	,lvl2_tmxName: null
+	,lvl2_tmxDescription: null
+	,lvl2_tmxSize: null
+	,lvl2_tmxLoad: function(done,failure) {
+		kha_Assets.loadBlob("lvl2_tmx",function(blob) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 144, className : "kha._Assets.BlobList", methodName : "lvl2_tmxLoad"});
+	}
+	,lvl2_tmxUnload: function() {
+		this.lvl2_tmx.unload();
+		this.lvl2_tmx = null;
+	}
+	,lvl3_tmx: null
+	,lvl3_tmxName: null
+	,lvl3_tmxDescription: null
+	,lvl3_tmxSize: null
+	,lvl3_tmxLoad: function(done,failure) {
+		kha_Assets.loadBlob("lvl3_tmx",function(blob) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 144, className : "kha._Assets.BlobList", methodName : "lvl3_tmxLoad"});
+	}
+	,lvl3_tmxUnload: function() {
+		this.lvl3_tmx.unload();
+		this.lvl3_tmx = null;
 	}
 	,names: null
 	,__class__: kha__$Assets_BlobList
 };
 var kha__$Assets_FontList = function() {
-	this.names = ["mainfont"];
+	this.names = ["Kenney_Thick","mainfont"];
 	this.mainfontSize = 91504;
 	this.mainfontDescription = { name : "mainfont", file_sizes : [91504], files : ["mainfont.ttf"], type : "font"};
 	this.mainfontName = "mainfont";
 	this.mainfont = null;
+	this.Kenney_ThickSize = 9448;
+	this.Kenney_ThickDescription = { name : "Kenney_Thick", file_sizes : [9448], files : ["Kenney Thick.ttf"], type : "font"};
+	this.Kenney_ThickName = "Kenney_Thick";
+	this.Kenney_Thick = null;
 };
 $hxClasses["kha._Assets.FontList"] = kha__$Assets_FontList;
 kha__$Assets_FontList.__name__ = "kha._Assets.FontList";
 kha__$Assets_FontList.prototype = {
 	get: function(name) {
 		return Reflect.field(this,name);
+	}
+	,Kenney_Thick: null
+	,Kenney_ThickName: null
+	,Kenney_ThickDescription: null
+	,Kenney_ThickSize: null
+	,Kenney_ThickLoad: function(done,failure) {
+		kha_Assets.loadFont("Kenney_Thick",function(font) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 148, className : "kha._Assets.FontList", methodName : "Kenney_ThickLoad"});
+	}
+	,Kenney_ThickUnload: function() {
+		this.Kenney_Thick.unload();
+		this.Kenney_Thick = null;
 	}
 	,mainfont: null
 	,mainfontName: null
@@ -52191,8 +52613,64 @@ kha_vr_TimeWarpParms.prototype = {
 	,RightOverlay: null
 	,__class__: kha_vr_TimeWarpParms
 };
-var states_GameState = function(room,fromRoom) {
+var states_EndGame = function(score) {
+	this.score = score;
 	com_framework_utils_State.call(this);
+};
+$hxClasses["states.EndGame"] = states_EndGame;
+states_EndGame.__name__ = "states.EndGame";
+states_EndGame.__super__ = com_framework_utils_State;
+states_EndGame.prototype = $extend(com_framework_utils_State.prototype,{
+	score: null
+	,load: function(resources) {
+		var atlas = new com_loading_basicResources_JoinAtlas(500,500);
+		atlas.add(new com_loading_basicResources_FontLoader("Kenney_Thick",20));
+		atlas.add(new com_loading_basicResources_ImageLoader("game_over"));
+		resources.add(atlas);
+	}
+	,init: function() {
+		this.stageColor(50,0,0);
+		var image = new com_gEngine_display_Sprite("game_over");
+		image.set_smooth(false);
+		image.x = kha_System.windowWidth() * 0.33;
+		image.y = kha_System.windowHeight() * 0.1;
+		this.stage.addChild(image);
+		var scoreText = new com_gEngine_display_Text("Kenney_Thick");
+		scoreText.set_smooth(false);
+		scoreText.x = kha_System.windowWidth() * 0.38;
+		scoreText.y = kha_System.windowHeight() * 0.6;
+		scoreText.set_text("Final Score " + this.score);
+		scoreText.set_color(-16777216);
+		var title = new com_gEngine_display_Text("Kenney_Thick");
+		title.set_smooth(false);
+		title.x = kha_System.windowWidth() * 0.32;
+		title.y = kha_System.windowHeight() * 0.7;
+		title.set_text("Spcacebar - Play again");
+		title.set_color(-16777216);
+		var subTitle = new com_gEngine_display_Text("Kenney_Thick");
+		subTitle.set_smooth(false);
+		subTitle.x = kha_System.windowWidth() * 0.38;
+		subTitle.y = kha_System.windowHeight() * 0.8;
+		subTitle.set_text("M - Main Menu");
+		subTitle.set_color(-16777216);
+		this.stage.addChild(scoreText);
+		this.stage.addChild(subTitle);
+		this.stage.addChild(title);
+	}
+	,update: function(dt) {
+		com_framework_utils_State.prototype.update.call(this,dt);
+		if(com_framework_utils_Input.i.isKeyCodePressed(32)) {
+			this.changeState(new states_GameState(1));
+		}
+	}
+	,__class__: states_EndGame
+});
+var states_GameState = function(room) {
+	this.enemyCollision = new com_collision_platformer_CollisionGroup();
+	com_framework_utils_State.call(this);
+	if(room == null || room > 3) {
+		room = 1;
+	}
 	this.room = room;
 };
 $hxClasses["states.GameState"] = states_GameState;
@@ -52203,12 +52681,11 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	,chivito: null
 	,simulationLayer: null
 	,touchJoystick: null
-	,tray: null
-	,mayonnaiseMap: null
 	,room: null
 	,winZone: null
+	,enemyCollision: null
 	,load: function(resources) {
-		resources.add(new com_loading_basicResources_DataLoader("testRoom_tmx"));
+		resources.add(new com_loading_basicResources_DataLoader("lvl" + this.room + "_tmx"));
 		var atlas = new com_loading_basicResources_JoinAtlas(2048,2048);
 		atlas.add(new com_loading_basicResources_TilesheetLoader("tiles2",32,32,0));
 		atlas.add(new com_loading_basicResources_SpriteSheetLoader("hero",45,60,0,[new com_loading_basicResources_Sequence("fall",[0]),new com_loading_basicResources_Sequence("slide",[0]),new com_loading_basicResources_Sequence("jump",[1]),new com_loading_basicResources_Sequence("run",[2,3,4,5,6,7,8,9]),new com_loading_basicResources_Sequence("idle",[10]),new com_loading_basicResources_Sequence("wallGrab",[11])]));
@@ -52218,36 +52695,26 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		this.stageColor(0.5,.5,0.5);
 		this.simulationLayer = new com_gEngine_display_Layer();
 		this.stage.addChild(this.simulationLayer);
-		this.worldMap = new com_collision_platformer_Tilemap("testRoom_tmx");
+		states_GlobalGameData.simulationLayer = this.simulationLayer;
+		this.worldMap = new com_collision_platformer_Tilemap("lvl" + this.room + "_tmx");
 		this.worldMap.init($bind(this,this.parseTileLayers),$bind(this,this.parseMapObjects));
-		this.tray = new helpers_Tray(this.mayonnaiseMap);
-		this.stage.cameras[0].limits(64,0,this.worldMap.widthIntTiles * 32 - 128,this.worldMap.heightInTiles * 32);
+		var invader = new gameObjects_Invader(300,300,this.simulationLayer,this.enemyCollision);
+		this.addChild(invader);
+		this.stage.cameras[0].limits(64,0,this.worldMap.widthIntTiles * 32,this.worldMap.heightInTiles * 32);
 		this.createTouchJoystick();
-	}
-	,createTouchJoystick: function() {
-		this.touchJoystick = new com_framework_utils_VirtualGamepad();
-		this.touchJoystick.addKeyButton(14,37);
-		this.touchJoystick.addKeyButton(15,39);
-		this.touchJoystick.addKeyButton(12,38);
-		this.touchJoystick.addKeyButton(0,32);
-		this.touchJoystick.addKeyButton(2,88);
-		this.touchJoystick.notify(($_=this.chivito,$bind($_,$_.onAxisChange)),($_=this.chivito,$bind($_,$_.onButtonChange)));
-		var gamepad = com_framework_utils_Input.i.getGamepad(0);
-		gamepad.notify(($_=this.chivito,$bind($_,$_.onAxisChange)),($_=this.chivito,$bind($_,$_.onButtonChange)));
 	}
 	,parseTileLayers: function(layerTilemap,tileLayer) {
 		if(!tileLayer.properties.exists("noCollision")) {
 			layerTilemap.createCollisions(tileLayer);
 		}
 		this.simulationLayer.addChild(layerTilemap.createDisplay(tileLayer,new com_gEngine_display_Sprite("tiles2")));
-		this.mayonnaiseMap = layerTilemap.createDisplay(tileLayer,new com_gEngine_display_Sprite("tiles2"));
-		this.simulationLayer.addChild(this.mayonnaiseMap);
 	}
 	,parseMapObjects: function(layerTilemap,object) {
 		if(object.name.toLowerCase() == "playerPosition".toLowerCase()) {
 			if(this.chivito == null) {
 				this.chivito = new gameObjects_ChivitoBoy(object.x,object.y,this.simulationLayer);
 				this.addChild(this.chivito);
+				states_GlobalGameData.chivito = this.chivito;
 			}
 		} else if(object.name.toLowerCase() == "winZone".toLowerCase()) {
 			this.winZone = new com_collision_platformer_CollisionBox();
@@ -52271,19 +52738,51 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		this.stage.cameras[0].setTarget(this.chivito.collision.x,this.chivito.collision.y);
 		com_collision_platformer_CollisionEngine.collide(this.chivito.collision,this.worldMap.collision);
 		if(com_collision_platformer_CollisionEngine.overlap(this.chivito.collision,this.winZone)) {
-			this.changeState(new states_GameState("",""));
+			this.changeState(new states_GameState(++this.room));
 		}
-		this.tray.setContactPosition(this.chivito.collision.x + this.chivito.collision.width / 2,this.chivito.collision.y + this.chivito.collision.height + 1,8);
-		this.tray.setContactPosition(this.chivito.collision.x + this.chivito.collision.width + 1,this.chivito.collision.y + this.chivito.collision.height / 2,2);
-		this.tray.setContactPosition(this.chivito.collision.x - 1,this.chivito.collision.y + this.chivito.collision.height / 2,1);
+		com_collision_platformer_CollisionEngine.overlap(this.chivito.collision,this.enemyCollision,$bind(this,this.playerVsInvader));
+		com_collision_platformer_CollisionEngine.overlap(this.chivito.bulletsCollision,this.enemyCollision,$bind(this,this.bulletVsInvader));
+	}
+	,playerVsInvader: function(playerC,invaderC) {
+		this.changeState(new states_EndGame(8));
+	}
+	,bulletVsInvader: function(bulletC,invaderC) {
+		var enemey = invaderC.userData;
+		enemey.die();
+		var bullet = bulletC.userData;
+		bullet.die();
+	}
+	,createTouchJoystick: function() {
+		this.touchJoystick = new com_framework_utils_VirtualGamepad();
+		this.touchJoystick.addKeyButton(14,37);
+		this.touchJoystick.addKeyButton(15,39);
+		this.touchJoystick.addKeyButton(12,38);
+		this.touchJoystick.addKeyButton(13,40);
+		this.touchJoystick.addKeyButton(0,32);
+		this.touchJoystick.addKeyButton(2,88);
+		this.touchJoystick.notify(($_=this.chivito,$bind($_,$_.onAxisChange)),($_=this.chivito,$bind($_,$_.onButtonChange)));
+		var gamepad = com_framework_utils_Input.i.getGamepad(0);
+		gamepad.notify(($_=this.chivito,$bind($_,$_.onAxisChange)),($_=this.chivito,$bind($_,$_.onButtonChange)));
 	}
 	,draw: function(framebuffer) {
 		com_framework_utils_State.prototype.draw.call(this,framebuffer);
 		var camera = this.stage.cameras[0];
 		com_collision_platformer_CollisionEngine.renderDebug(framebuffer,camera);
 	}
+	,destroy: function() {
+		com_framework_utils_State.prototype.destroy.call(this);
+		states_GlobalGameData.destroy();
+	}
 	,__class__: states_GameState
 });
+var states_GlobalGameData = function() { };
+$hxClasses["states.GlobalGameData"] = states_GlobalGameData;
+states_GlobalGameData.__name__ = "states.GlobalGameData";
+states_GlobalGameData.destroy = function() {
+	states_GlobalGameData.simulationLayer = null;
+	states_GlobalGameData.chivito = null;
+	states_GlobalGameData.winState = true;
+};
 function $getIterator(o) { if( o instanceof Array ) return new haxe_iterators_ArrayIterator(o); else return o.iterator(); }
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $global.$haxeUID++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = m.bind(o); o.hx__closures__[m.__id__] = f; } return f; }
 $global.$haxeUID |= 0;
@@ -52390,14 +52889,6 @@ haxe_zip_InflateImpl.LEN_BASE_VAL_TBL = [3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,3
 haxe_zip_InflateImpl.DIST_EXTRA_BITS_TBL = [0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,-1,-1];
 haxe_zip_InflateImpl.DIST_BASE_VAL_TBL = [1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577];
 haxe_zip_InflateImpl.CODE_LENGTHS_POS = [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
-helpers_Tray.TOPTILE = 12;
-helpers_Tray.LEFTTILE = 10;
-helpers_Tray.RIGHTTILE = 9;
-helpers_Tray.SIDESTILE = 8;
-helpers_Tray.TOPRIGHTTILE = 6;
-helpers_Tray.TOPLEFTTILE = 7;
-helpers_Tray.ALLTILE = 11;
-helpers_Tray.EMPTY = 5;
 kha_Assets.images = new kha__$Assets_ImageList();
 kha_Assets.sounds = new kha__$Assets_SoundList();
 kha_Assets.blobs = new kha__$Assets_BlobList();

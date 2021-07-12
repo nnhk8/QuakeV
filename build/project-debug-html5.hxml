@@ -1,12 +1,12 @@
 -cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\Kha\Sources
 -cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\Kha\Backends\HTML5
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\chivito\Sources
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\chivito\khawy\Libraries\hxGeomAlgo\Sources
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\chivito\khawy\Libraries\Format\Sources
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\chivito\khawy\Sources
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\chivito\Libraries\tiled
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\chivito\khawy\Libraries\hxGeomAlgo
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\chivito\khawy\Libraries\Format
+-cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\Sources
+-cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\hxGeomAlgo\Sources
+-cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\Format\Sources
+-cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Sources
+-cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\Libraries\tiled
+-cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\hxGeomAlgo
+-cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\Format
 -D hxcpp_smart_strings
 -D debugInfo
 -D DEBUGDRAW
