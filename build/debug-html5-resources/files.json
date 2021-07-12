@@ -345,6 +345,28 @@
 			"original_height": 300
 		},
 		{
+			"name": "ghost",
+			"files": [
+				"ghost.png"
+			],
+			"file_sizes": [
+				2944
+			],
+			"type": "image",
+			"original_width": 967,
+			"original_height": 30
+		},
+		{
+			"name": "ghost_xml",
+			"files": [
+				"ghost.xml"
+			],
+			"file_sizes": [
+				918
+			],
+			"type": "blob"
+		},
+		{
 			"name": "hBlurVertexShader_vert",
 			"files": [
 				"hBlurVertexShader.vert.essl",
@@ -454,7 +476,7 @@
 				"lvl1.tmx"
 			],
 			"file_sizes": [
-				7308
+				7665
 			],
 			"type": "blob"
 		},

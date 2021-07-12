@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.gEngine.display.Sprite;
 import states.GlobalGameData;
 import kha.math.FastVector2;
 import com.collision.platformer.CollisionGroup;
@@ -9,8 +10,8 @@ import com.helpers.Rectangle;
 import com.gEngine.helpers.RectangleDisplay;
 import com.framework.utils.Entity;
 
-class Invader extends Entity {
-	var display:RectangleDisplay;
+class Ghost extends Entity {
+	var display:Sprite;
 
 	public var collision:CollisionBox;
 	public var facingDir:FastVector2;
@@ -18,15 +19,18 @@ class Invader extends Entity {
 
 	public function new(x:Float, y:Float, layer:Layer, collisionGroup:CollisionGroup) {
 		super();
-		display = new RectangleDisplay();
-		display.scaleX = 50;
-		display.scaleY = 50;
-		display.pivotX = 0.5;
-		display.pivotY = 0.5;
-
+		display = new Sprite("ghost");
+		display.smooth =false;
+		display.timeline.playAnimation("idle",true);
+		display.timeline.frameRate = 1/10;
+		display.scaleX = 4;
+		display.scaleY = 4;
+		display.pivotX = 19;
+		display.pivotY = 39;
+		display.offsetX = -19;
+		display.offsetY = -39;
 		display.x = x;
 		display.y = y;
-		display.setColor(0, 255, 0);
 		layer.addChild(display);
 
 		collision = new CollisionBox();

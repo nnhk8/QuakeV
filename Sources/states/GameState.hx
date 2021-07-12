@@ -1,7 +1,10 @@
 package states;
 
+import com.loading.basicResources.SparrowLoader;
+import gameObjects.Zones;
+import gameObjects.LevelPositions;
 import gameObjects.Bullet;
-import gameObjects.Invader;
+import gameObjects.Ghost;
 import com.collision.platformer.ICollider;
 import com.collision.platformer.CollisionGroup;
 import com.gEngine.display.Sprite;
@@ -32,6 +35,7 @@ class GameState extends State {
 	var touchJoystick:VirtualGamepad;
 	var room:Int;
 	var winZone:CollisionBox;
+	var spawnZones:CollisionGroup=new CollisionGroup();
 
 	var enemyCollision:CollisionGroup = new CollisionGroup();
 
@@ -56,6 +60,12 @@ class GameState extends State {
 			new Sequence("idle", [10]),
 			new Sequence("wallGrab", [11])
 		]));
+
+		atlas.add(new SpriteSheetLoader("ghost", 44, 30, 0, [
+			new Sequence("idle", [0,1,2,3,4,5,6,7,8,9]),
+			]));
+
+		
 		resources.add(atlas);
 	}
 
@@ -68,8 +78,8 @@ class GameState extends State {
 
 		worldMap = new Tilemap("lvl" + room + "_tmx");
 		worldMap.init(parseTileLayers, parseMapObjects);
-		var invader = new Invader(300, 300, simulationLayer,enemyCollision);
-		addChild(invader);
+		var ghost = new Ghost(300, 300, simulationLayer, enemyCollision);
+		addChild(ghost);
 
 		stage.defaultCamera().limits(32 * 2, 0, worldMap.widthIntTiles * 32, worldMap.heightInTiles * 32);
 		createTouchJoystick();
@@ -101,6 +111,8 @@ class GameState extends State {
 			sprite.y = object.y - object.height;
 			sprite.timeline.gotoAndStop(1);
 			stage.addChild(sprite);
+		} else if (compareName(object, "spawnZone")) {
+			new Zones(object,this.spawnZones);
 		}
 	}
 
@@ -114,19 +126,29 @@ class GameState extends State {
 		stage.defaultCamera().setTarget(chivito.collision.x, chivito.collision.y);
 
 		CollisionEngine.collide(chivito.collision, worldMap.collision);
-		if (CollisionEngine.overlap(chivito.collision, winZone)) {			
+		if (CollisionEngine.overlap(chivito.collision, winZone)) {
 			changeState(new GameState(++room));
 		}
-		CollisionEngine.overlap(chivito.collision, enemyCollision, playerVsInvader);
-		CollisionEngine.overlap(chivito.bulletsCollision, enemyCollision, bulletVsInvader);
+		CollisionEngine.overlap(chivito.collision, spawnZones, playerVsSpawnZone);
+		CollisionEngine.overlap(chivito.collision, enemyCollision, playerVsGhost);
+		CollisionEngine.overlap(chivito.bulletsCollision, enemyCollision, bulletVsGhost);
 	}
 
-	function playerVsInvader(playerC:ICollider, invaderC:ICollider) {
+	function playerVsGhost(playerC:ICollider, ghostC:ICollider) {
 		changeState(new EndGame(8));
 	}
 
-	function bulletVsInvader(bulletC:ICollider, invaderC:ICollider) {
-		var enemey:Invader = invaderC.userData;
+	function playerVsSpawnZone(playerC:ICollider, spawnZoneC:ICollider) {
+		var spawnPositions = LevelPositions.getSpawnPoints();
+		for (pos in spawnPositions) {
+			addChild(new Ghost(pos.x, pos.y, GlobalGameData.simulationLayer, this.enemyCollision));
+		}
+		var zone:Zones = spawnZoneC.userData;
+		zone.destroy();
+	}
+
+	function bulletVsGhost(bulletC:ICollider, ghostC:ICollider) {
+		var enemey:Ghost = ghostC.userData;
 		enemey.die();
 		var bullet:Bullet = cast bulletC.userData;
 		bullet.die();
@@ -160,8 +182,3 @@ class GameState extends State {
 		GlobalGameData.destroy();
 	}
 }
-
-
-
-	
-
