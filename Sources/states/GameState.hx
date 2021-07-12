@@ -63,6 +63,13 @@ class GameState extends State {
 
 		atlas.add(new SpriteSheetLoader("ghost", 44, 30, 0, [
 			new Sequence("idle", [0,1,2,3,4,5,6,7,8,9]),
+			new Sequence("appear",[15,16,17,18]),
+			new Sequence("desappear",[19,20,21,22])
+			]));
+			
+		atlas.add(new SpriteSheetLoader("explosion", 52, 65, 0, [
+			new Sequence("bullet", [0]),
+			new Sequence("boom",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18])
 			]));
 
 		
@@ -78,7 +85,7 @@ class GameState extends State {
 
 		worldMap = new Tilemap("lvl" + room + "_tmx");
 		worldMap.init(parseTileLayers, parseMapObjects);
-		var ghost = new Ghost(300, 300, simulationLayer, enemyCollision);
+		var ghost = new Ghost(300, 300, enemyCollision);
 		addChild(ghost);
 
 		stage.defaultCamera().limits(32 * 2, 0, worldMap.widthIntTiles * 32, worldMap.heightInTiles * 32);
@@ -129,6 +136,7 @@ class GameState extends State {
 		if (CollisionEngine.overlap(chivito.collision, winZone)) {
 			changeState(new GameState(++room));
 		}
+		CollisionEngine.overlap(chivito.bulletsCollision, worldMap.collision, bulletVsWorld);
 		CollisionEngine.overlap(chivito.collision, spawnZones, playerVsSpawnZone);
 		CollisionEngine.overlap(chivito.collision, enemyCollision, playerVsGhost);
 		CollisionEngine.overlap(chivito.bulletsCollision, enemyCollision, bulletVsGhost);
@@ -141,7 +149,7 @@ class GameState extends State {
 	function playerVsSpawnZone(playerC:ICollider, spawnZoneC:ICollider) {
 		var spawnPositions = LevelPositions.getSpawnPoints();
 		for (pos in spawnPositions) {
-			addChild(new Ghost(pos.x, pos.y, GlobalGameData.simulationLayer, this.enemyCollision));
+			addChild(new Ghost(pos.x, pos.y, this.enemyCollision));
 		}
 		var zone:Zones = spawnZoneC.userData;
 		zone.destroy();
@@ -149,7 +157,13 @@ class GameState extends State {
 
 	function bulletVsGhost(bulletC:ICollider, ghostC:ICollider) {
 		var enemey:Ghost = ghostC.userData;
-		enemey.die();
+		enemey.damage();
+		var bullet:Bullet = cast bulletC.userData;
+		bullet.die();
+	}
+
+
+	function bulletVsWorld(bulletC:ICollider, worldMapC:ICollider) {
 		var bullet:Bullet = cast bulletC.userData;
 		bullet.die();
 	}

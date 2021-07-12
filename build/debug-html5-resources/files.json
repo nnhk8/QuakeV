@@ -231,6 +231,18 @@
 			"types": []
 		},
 		{
+			"name": "explosion",
+			"files": [
+				"explosion.png"
+			],
+			"file_sizes": [
+				53692
+			],
+			"type": "image",
+			"original_width": 260,
+			"original_height": 256
+		},
+		{
 			"name": "filmGrain_frag",
 			"files": [
 				"filmGrain.frag.essl",
@@ -350,21 +362,11 @@
 				"ghost.png"
 			],
 			"file_sizes": [
-				2944
+				2967
 			],
 			"type": "image",
-			"original_width": 967,
-			"original_height": 30
-		},
-		{
-			"name": "ghost_xml",
-			"files": [
-				"ghost.xml"
-			],
-			"file_sizes": [
-				918
-			],
-			"type": "blob"
+			"original_width": 660,
+			"original_height": 60
 		},
 		{
 			"name": "hBlurVertexShader_vert",

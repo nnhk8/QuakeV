@@ -16,22 +16,21 @@ class Ghost extends Entity {
 	public var collision:CollisionBox;
 	public var facingDir:FastVector2;
 	public var SPEED:Float = 80;
+	public var dying:Bool = false;
 
-	public function new(x:Float, y:Float, layer:Layer, collisionGroup:CollisionGroup) {
+	public function new(x:Float, y:Float, collisionGroup:CollisionGroup) {
 		super();
 		display = new Sprite("ghost");
-		display.smooth =false;
-		display.timeline.playAnimation("idle",true);
-		display.timeline.frameRate = 1/10;
-		display.scaleX = 4;
-		display.scaleY = 4;
-		display.pivotX = 19;
-		display.pivotY = 39;
-		display.offsetX = -19;
-		display.offsetY = -39;
+		display.smooth = false;
+		display.timeline.playAnimation("appear", false);
+		display.timeline.frameRate = 1 / 10;
+		display.scaleX = 2;
+		display.scaleY = 2;
+		display.pivotX = display.width();
+		display.offsetY = -display.height();
 		display.x = x;
 		display.y = y;
-		layer.addChild(display);
+		GlobalGameData.simulationLayer.addChild(display);
 
 		collision = new CollisionBox();
 		collision.width = 40;
@@ -44,22 +43,36 @@ class Ghost extends Entity {
 	}
 
 	override function update(dt:Float) {
-		super.update(dt);
-		collision.update(dt);
-		facingDir.x = GlobalGameData.chivito.collision.x - collision.x;
-		facingDir.y = GlobalGameData.chivito.collision.y - collision.y;
-		facingDir.setFrom(facingDir.normalized());
-
+		if (dying) {
+			if (!display.timeline.playing) {
+				die();
+			}
+		} else {
+			if (!display.timeline.playing) {
+				display.timeline.playAnimation("idle", true);
+			}
+			super.update(dt);
+			collision.update(dt);
+			facingDir.x = GlobalGameData.chivito.collision.x - collision.x;
+			facingDir.y = GlobalGameData.chivito.collision.y - collision.y;
+			facingDir.setFrom(facingDir.normalized());
+		}
 		collision.velocityX = facingDir.x * SPEED;
 		collision.velocityY = facingDir.y * SPEED;
 
-		display.rotation = Math.atan2(facingDir.y, facingDir.x);
+		// display.rotation = Math.atan2(facingDir.y, facingDir.x);
 	}
 
 	override function render() {
 		super.render();
 		display.x = collision.x + collision.width * 0.5;
 		display.y = collision.y + collision.height * 0.5;
+	}
+
+	public function damage():Void {
+		display.timeline.playAnimation("desappear", false);
+		collision.removeFromParent();
+		dying = true;
 	}
 
 	override function destroy() {

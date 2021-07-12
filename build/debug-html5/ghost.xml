@@ -14,9 +14,9 @@ oY => y-corner offset
 oW => original width
 oH => original height
 r => 'y' if sprite is rotated-->
-<TextureAtlas imagePath="ghost.png" width="967" height="30" scale="1" format="RGBA8888">
-  <sprite n="Idle (44x30)" x="0" y="0" w="424" h="30" pX="0.5" pY="0.5" oX="9" oY="0" oW="440" oH="30"/>
-  <sprite n="Hit (44x30)" x="424" y="0" w="204" h="28" pX="0.5" pY="0.5" oX="8" oY="3" oW="220" oH="31"/>
-  <sprite n="Appear (44x30)" x="628" y="0" w="170" h="27" pX="0.5" pY="0.5" oX="0" oY="3" oW="176" oH="30"/>
-  <sprite n="Desappear (44x30)" x="798" y="0" w="169" h="27" pX="0.5" pY="0.5" oX="7" oY="3" oW="176" oH="30"/>
+<TextureAtlas imagePath="ghost.png" width="660" height="60" scale="1" format="RGBA8888">
+  <sprite n="Idle (44x30)" x="0" y="0" w="440" h="30" pX="0.5" pY="0.5"/>
+  <sprite n="Hit (44x30)" x="440" y="0" w="220" h="31" pX="0.5" pY="0.5"/>
+  <sprite n="Appear (44x30)" x="0" y="30" w="176" h="30" pX="0.5" pY="0.5"/>
+  <sprite n="Desappear (44x30)" x="176" y="30" w="176" h="30" pX="0.5" pY="0.5"/>
 </TextureAtlas>
