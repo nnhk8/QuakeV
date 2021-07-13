@@ -53,8 +53,8 @@ class Ghost extends Entity {
 			}
 			super.update(dt);
 			collision.update(dt);
-			facingDir.x = GlobalGameData.chivito.collision.x - collision.x;
-			facingDir.y = GlobalGameData.chivito.collision.y - collision.y;
+			facingDir.x = GlobalGameData.player.collision.x - collision.x;
+			facingDir.y = GlobalGameData.player.collision.y - collision.y;
 			facingDir.setFrom(facingDir.normalized());
 		}
 		collision.velocityX = facingDir.x * SPEED;

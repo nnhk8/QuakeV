@@ -231,6 +231,18 @@
 			"types": []
 		},
 		{
+			"name": "chain",
+			"files": [
+				"chain.png"
+			],
+			"file_sizes": [
+				2403
+			],
+			"type": "image",
+			"original_width": 304,
+			"original_height": 38
+		},
+		{
 			"name": "explosion",
 			"files": [
 				"explosion.png"
@@ -478,7 +490,7 @@
 				"lvl1.tmx"
 			],
 			"file_sizes": [
-				7665
+				12150
 			],
 			"type": "blob"
 		},
@@ -2087,7 +2099,7 @@
 				"tiles2.png"
 			],
 			"file_sizes": [
-				5652
+				29965
 			],
 			"type": "image",
 			"original_width": 128,

@@ -1,16 +1,16 @@
 package states;
 
-import gameObjects.ChivitoBoy;
+import gameObjects.Player;
 import com.gEngine.display.Layer;
 
 class GlobalGameData {
 	public static var simulationLayer:Layer;
-	public static var chivito:ChivitoBoy;
+	public static var player:Player;
 	public static var winState:Bool;
 
 	static public function destroy() {
 		simulationLayer = null;
-		chivito=null;
+		player=null;
 		winState=true;
 	}
 

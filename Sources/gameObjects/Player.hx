@@ -11,7 +11,7 @@ import com.collision.platformer.CollisionBox;
 import com.gEngine.display.Sprite;
 import com.framework.utils.Entity;
 
-class ChivitoBoy extends Entity {
+class Player extends Entity {
 	public var display:Sprite;
 	public var collision:CollisionBox;
 	public var fly:Bool = false;

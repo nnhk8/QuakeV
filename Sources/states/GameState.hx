@@ -18,7 +18,7 @@ import format.tmx.Data.TmxObject;
 import kha.input.KeyCode;
 import com.framework.utils.Input;
 import com.collision.platformer.CollisionEngine;
-import gameObjects.ChivitoBoy;
+import gameObjects.Player;
 import com.loading.basicResources.TilesheetLoader;
 import com.loading.basicResources.SpriteSheetLoader;
 import com.gEngine.display.Layer;
@@ -30,7 +30,7 @@ import com.framework.utils.State;
 
 class GameState extends State {
 	var worldMap:Tilemap;
-	var chivito:ChivitoBoy;
+	var player:Player;
 	var simulationLayer:Layer;
 	var touchJoystick:VirtualGamepad;
 	var room:Int;
@@ -67,9 +67,9 @@ class GameState extends State {
 			new Sequence("desappear",[19,20,21,22])
 			]));
 			
-		atlas.add(new SpriteSheetLoader("explosion", 52, 65, 0, [
+		atlas.add(new SpriteSheetLoader("explosion", 51, 64, 0, [
 			new Sequence("bullet", [0]),
-			new Sequence("boom",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18])
+			new Sequence("boom",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17])
 			]));
 
 		
@@ -88,7 +88,8 @@ class GameState extends State {
 		var ghost = new Ghost(300, 300, enemyCollision);
 		addChild(ghost);
 
-		stage.defaultCamera().limits(32 * 2, 0, worldMap.widthIntTiles * 32, worldMap.heightInTiles * 32);
+		stage.defaultCamera().limits(32, 0, worldMap.widthIntTiles * 32-2*32, worldMap.heightInTiles * 32);
+		
 		createTouchJoystick();
 	}
 
@@ -101,10 +102,10 @@ class GameState extends State {
 
 	function parseMapObjects(layerTilemap:Tilemap, object:TmxObject) {
 		if (compareName(object, "playerPosition")) {
-			if (chivito == null) {
-				chivito = new ChivitoBoy(object.x, object.y, simulationLayer);
-				addChild(chivito);
-				GlobalGameData.chivito = chivito;
+			if (player == null) {
+				player = new Player(object.x, object.y, simulationLayer);
+				addChild(player);
+				GlobalGameData.player = player;
 			}
 		} else if (compareName(object, "winZone")) {
 			winZone = new CollisionBox();
@@ -130,16 +131,16 @@ class GameState extends State {
 	override function update(dt:Float) {
 		super.update(dt);
 
-		stage.defaultCamera().setTarget(chivito.collision.x, chivito.collision.y);
+		stage.defaultCamera().setTarget(player.collision.x, player.collision.y);
 
-		CollisionEngine.collide(chivito.collision, worldMap.collision);
-		if (CollisionEngine.overlap(chivito.collision, winZone)) {
+		CollisionEngine.collide(player.collision, worldMap.collision);
+		if (CollisionEngine.overlap(player.collision, winZone)) {
 			changeState(new GameState(++room));
 		}
-		CollisionEngine.overlap(chivito.bulletsCollision, worldMap.collision, bulletVsWorld);
-		CollisionEngine.overlap(chivito.collision, spawnZones, playerVsSpawnZone);
-		CollisionEngine.overlap(chivito.collision, enemyCollision, playerVsGhost);
-		CollisionEngine.overlap(chivito.bulletsCollision, enemyCollision, bulletVsGhost);
+		CollisionEngine.overlap(worldMap.collision, player.bulletsCollision, bulletVsWorld);
+		CollisionEngine.overlap(player.collision, spawnZones, playerVsSpawnZone);
+		CollisionEngine.overlap(player.collision, enemyCollision, playerVsGhost);
+		CollisionEngine.overlap(player.bulletsCollision, enemyCollision, bulletVsGhost);
 	}
 
 	function playerVsGhost(playerC:ICollider, ghostC:ICollider) {
@@ -163,9 +164,9 @@ class GameState extends State {
 	}
 
 
-	function bulletVsWorld(bulletC:ICollider, worldMapC:ICollider) {
+	function bulletVsWorld(worldMapC:ICollider, bulletC:ICollider) {
 		var bullet:Bullet = cast bulletC.userData;
-		bullet.die();
+		bullet.damage();
 	}
 
 	function createTouchJoystick() {
@@ -177,10 +178,10 @@ class GameState extends State {
 		touchJoystick.addKeyButton(XboxJoystick.A, KeyCode.Space);
 		touchJoystick.addKeyButton(XboxJoystick.X, KeyCode.X);
 
-		touchJoystick.notify(chivito.onAxisChange, chivito.onButtonChange);
+		touchJoystick.notify(player.onAxisChange, player.onButtonChange);
 
 		var gamepad = Input.i.getGamepad(0);
-		gamepad.notify(chivito.onAxisChange, chivito.onButtonChange);
+		gamepad.notify(player.onAxisChange, player.onButtonChange);
 	}
 
 	#if DEBUGDRAW

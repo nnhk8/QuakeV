@@ -24,7 +24,7 @@ class Bullet extends Entity {
 		display = new Sprite("explosion");
 		display.smooth = false;
 		display.timeline.playAnimation("bullet", false);
-		display.timeline.frameRate = 1 / 10;
+		display.timeline.frameRate = 1 / 20;
 		display.scaleX = 2;
 		display.scaleY = 2;
 		display.pivotX = display.width();
