@@ -1,5 +1,7 @@
 package states;
 
+import gameObjects.Saw;
+import kha.math.FastVector2;
 import com.loading.basicResources.SparrowLoader;
 import gameObjects.Zones;
 import gameObjects.LevelPositions;
@@ -35,9 +37,11 @@ class GameState extends State {
 	var touchJoystick:VirtualGamepad;
 	var room:Int;
 	var winZone:CollisionBox;
-	var spawnZones:CollisionGroup=new CollisionGroup();
+	var spawnZones:CollisionGroup = new CollisionGroup();
+	var deathZones:CollisionGroup = new CollisionGroup();
 
 	var enemyCollision:CollisionGroup = new CollisionGroup();
+	var sawCollisions:CollisionGroup = new CollisionGroup();
 
 	public function new(room:Int) {
 		super();
@@ -62,17 +66,19 @@ class GameState extends State {
 		]));
 
 		atlas.add(new SpriteSheetLoader("ghost", 44, 30, 0, [
-			new Sequence("idle", [0,1,2,3,4,5,6,7,8,9]),
-			new Sequence("appear",[15,16,17,18]),
-			new Sequence("desappear",[19,20,21,22])
-			]));
-			
+			new Sequence("idle", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
+			new Sequence("appear", [15, 16, 17, 18]),
+			new Sequence("desappear", [19, 20, 21, 22])
+		]));
+
 		atlas.add(new SpriteSheetLoader("explosion", 51, 64, 0, [
 			new Sequence("bullet", [0]),
-			new Sequence("boom",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17])
-			]));
+			new Sequence("boom", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
+		]));
+		atlas.add(new SpriteSheetLoader("chain", 38, 38, 0, [
+			new Sequence("spin", [0,1, 2, 3, 4, 5, 6, 7])
+		]));
 
-		
 		resources.add(atlas);
 	}
 
@@ -82,15 +88,12 @@ class GameState extends State {
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);
 		GlobalGameData.simulationLayer = simulationLayer;
-
 		worldMap = new Tilemap("lvl" + room + "_tmx");
 		worldMap.init(parseTileLayers, parseMapObjects);
-		var ghost = new Ghost(300, 300, enemyCollision);
-		addChild(ghost);
-
-		stage.defaultCamera().limits(32, 0, worldMap.widthIntTiles * 32-2*32, worldMap.heightInTiles * 32);
-		
+		stage.defaultCamera().limits(32, 0, worldMap.widthIntTiles * 32 - 2 * 32, worldMap.heightInTiles * 32);
 		createTouchJoystick();
+		GlobalGameData.sawCollisions=this.sawCollisions;
+		this.buildLevel();
 	}
 
 	function parseTileLayers(layerTilemap:Tilemap, tileLayer:TmxTileLayer) {
@@ -120,8 +123,11 @@ class GameState extends State {
 			sprite.timeline.gotoAndStop(1);
 			stage.addChild(sprite);
 		} else if (compareName(object, "spawnZone")) {
-			new Zones(object,this.spawnZones);
+			new Zones(object, this.spawnZones);
+		}else if (compareName(object, "deathZone")) {
+			new Zones(object, this.deathZones);
 		}
+
 	}
 
 	inline function compareName(object:TmxObject, name:String) {
@@ -137,13 +143,20 @@ class GameState extends State {
 		if (CollisionEngine.overlap(player.collision, winZone)) {
 			changeState(new GameState(++room));
 		}
-		CollisionEngine.overlap(worldMap.collision, player.bulletsCollision, bulletVsWorld);
 		CollisionEngine.overlap(player.collision, spawnZones, playerVsSpawnZone);
+		CollisionEngine.overlap(player.collision, deathZones, playerVsDeathZone);
+
+		CollisionEngine.overlap(worldMap.collision, player.bulletsCollision, bulletVsWorld);
 		CollisionEngine.overlap(player.collision, enemyCollision, playerVsGhost);
 		CollisionEngine.overlap(player.bulletsCollision, enemyCollision, bulletVsGhost);
+		CollisionEngine.overlap(player.collision, sawCollisions, playerVsSaw);
 	}
 
 	function playerVsGhost(playerC:ICollider, ghostC:ICollider) {
+		changeState(new EndGame(8));
+	}
+
+	function playerVsSaw(playerC:ICollider, sawC:ICollider) {
 		changeState(new EndGame(8));
 	}
 
@@ -156,13 +169,16 @@ class GameState extends State {
 		zone.destroy();
 	}
 
+	function playerVsDeathZone(playerC:ICollider, spawnZoneC:ICollider) {
+		changeState(new EndGame(8));
+	}
+
 	function bulletVsGhost(bulletC:ICollider, ghostC:ICollider) {
 		var enemey:Ghost = ghostC.userData;
 		enemey.damage();
 		var bullet:Bullet = cast bulletC.userData;
 		bullet.die();
 	}
-
 
 	function bulletVsWorld(worldMapC:ICollider, bulletC:ICollider) {
 		var bullet:Bullet = cast bulletC.userData;
@@ -195,5 +211,21 @@ class GameState extends State {
 	override function destroy() {
 		super.destroy();
 		GlobalGameData.destroy();
+	}
+
+	private function buildLevel() {
+		switch (this.room) {
+			case 1:
+				var ghost = new Ghost(300, 300, enemyCollision);
+				addChild(ghost);
+				var a = new FastVector2(1230, 332);
+				var b = new FastVector2(1555, 332);
+				var c = new FastVector2(1555, 500);
+				var d = new FastVector2(1230, 500);
+				var saw1 = new Saw(LevelPositions.getRectangularPath(a, b, c, d));
+				addChild(saw1);
+				var saw2 = new Saw(LevelPositions.getRectangularPath(c, d, a, b));
+				addChild(saw2);
+		}
 	}
 }
