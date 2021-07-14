@@ -4,19 +4,19 @@ _Obligatorio para la electiva de Programación de videojuegos 1 con el lenguaje 
 ## Reglas del juego
 
 ### Movimientos
-*X - disparar
-*Espacio - saltar
-*Flechas - movimiento
+* X - disparar
+* Espacio - saltar
+* Flechas - movimiento
 
 ### PowerUps  
-*Balas que atraviesan paredes por tiempo (facilita matar ghosts)
-*Volar pulsando Espacio reiteradas veces
+* Balas que atraviesan paredes por tiempo (facilita matar ghosts)
+* Volar pulsando Espacio reiteradas veces
 ### Enemigos
-*Ghosts voladores que se spawnean de las esquinas del mapa según por donde pase el jugador y lo persiguen, quitan 1 vida.
-*Sierras Eléctricas con movimientos predeterminados según el nivel quitan 1 de vida y por 5 seg no hace daño.
-*Hasards del mapa como la lava o los spikes, matan instantáneamente.
+* Ghosts voladores que se spawnean de las esquinas del mapa según por donde pase el jugador y lo persiguen, quitan 1 vida.
+* Sierras Eléctricas con movimientos predeterminados según el nivel quitan 1 de vida y por 5 seg no hace daño.
+* Hasards del mapa como la lava o los spikes, matan instantáneamente.
 ### Música
-Juego Quake 2
+* Juego Quake 2
 
 ## Fuentes 
 * [Conjunto de Graficos](https://pixelfrog-assets.itch.io/pixel-adventure-2)
