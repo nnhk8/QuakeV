@@ -59,8 +59,6 @@ class Ghost extends Entity {
 		}
 		collision.velocityX = facingDir.x * SPEED;
 		collision.velocityY = facingDir.y * SPEED;
-
-		// display.rotation = Math.atan2(facingDir.y, facingDir.x);
 	}
 
 	override function render() {

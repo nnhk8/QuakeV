@@ -289,6 +289,18 @@
 			"types": []
 		},
 		{
+			"name": "flying",
+			"files": [
+				"flying.png"
+			],
+			"file_sizes": [
+				1882
+			],
+			"type": "image",
+			"original_width": 288,
+			"original_height": 32
+		},
+		{
 			"name": "fov_frag",
 			"files": [
 				"fov.frag.essl",
@@ -379,6 +391,18 @@
 			"type": "image",
 			"original_width": 660,
 			"original_height": 60
+		},
+		{
+			"name": "ghostBullet",
+			"files": [
+				"ghostBullet.png"
+			],
+			"file_sizes": [
+				2071
+			],
+			"type": "image",
+			"original_width": 416,
+			"original_height": 54
 		},
 		{
 			"name": "hBlurVertexShader_vert",
@@ -490,7 +514,7 @@
 				"lvl1.tmx"
 			],
 			"file_sizes": [
-				12147
+				12412
 			],
 			"type": "blob"
 		},

@@ -1,5 +1,13 @@
 package states;
 
+import kha.Color;
+import com.gEngine.helpers.Screen;
+import com.gEngine.display.Text;
+import com.loading.basicResources.FontLoader;
+import com.gEngine.display.StaticLayer;
+import gameObjects.GhostBulletPowerUp;
+import js.lib.webassembly.Global;
+import gameObjects.FlyPowerUp;
 import gameObjects.Saw;
 import kha.math.FastVector2;
 import com.loading.basicResources.SparrowLoader;
@@ -34,6 +42,7 @@ class GameState extends State {
 	var worldMap:Tilemap;
 	var player:Player;
 	var simulationLayer:Layer;
+	var staticLayer:StaticLayer;
 	var touchJoystick:VirtualGamepad;
 	var room:Int;
 	var winZone:CollisionBox;
@@ -42,6 +51,8 @@ class GameState extends State {
 
 	var enemyCollision:CollisionGroup = new CollisionGroup();
 	var sawCollisions:CollisionGroup = new CollisionGroup();
+	var flyPowerUpCollisions:CollisionGroup = new CollisionGroup();
+	var ghostBulletsCollisions:CollisionGroup = new CollisionGroup();
 
 	public function new(room:Int) {
 		super();
@@ -65,6 +76,10 @@ class GameState extends State {
 			new Sequence("wallGrab", [11])
 		]));
 
+		atlas.add(new SpriteSheetLoader("flying", 32, 32, 0, [new Sequence("fly", [0, 1, 2, 3, 4, 5, 6, 7, 8])]));
+
+		atlas.add(new SpriteSheetLoader("ghostBullet", 52, 54, 0, [new Sequence("ghostBullet", [0, 1, 2, 3, 4, 5, 6, 7])]));
+
 		atlas.add(new SpriteSheetLoader("ghost", 44, 30, 0, [
 			new Sequence("idle", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
 			new Sequence("appear", [15, 16, 17, 18]),
@@ -75,25 +90,38 @@ class GameState extends State {
 			new Sequence("bullet", [0]),
 			new Sequence("boom", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
 		]));
-		atlas.add(new SpriteSheetLoader("chain", 38, 38, 0, [
-			new Sequence("spin", [0,1, 2, 3, 4, 5, 6, 7])
-		]));
+		atlas.add(new SpriteSheetLoader("chain", 38, 38, 0, [new Sequence("spin", [0, 1, 2, 3, 4, 5, 6, 7])]));
+
+		atlas.add(new FontLoader("Kenney_Thick",20));
 
 		resources.add(atlas);
 	}
 
 	override function init() {
 		stageColor(0.5, .5, 0.5);
-
+		GlobalGameData.sawCollisions = this.sawCollisions;
+		GlobalGameData.flyPowerUpCollisions = this.flyPowerUpCollisions;
+		GlobalGameData.ghostBulletsCollisions = this.ghostBulletsCollisions;
 		simulationLayer = new Layer();
+		staticLayer = new StaticLayer();
 		stage.addChild(simulationLayer);
+		stage.addChild(staticLayer);
+		GlobalGameData.staticLayer = staticLayer;
 		GlobalGameData.simulationLayer = simulationLayer;
 		worldMap = new Tilemap("lvl" + room + "_tmx");
+
 		worldMap.init(parseTileLayers, parseMapObjects);
 		stage.defaultCamera().limits(32, 0, worldMap.widthIntTiles * 32 - 2 * 32, worldMap.heightInTiles * 32);
 		createTouchJoystick();
-		GlobalGameData.sawCollisions=this.sawCollisions;
 		this.buildLevel();
+
+		var scoreText=new Text("Kenney_Thick");
+        scoreText.smooth=false;
+        scoreText.x = Screen.getWidth()*0.38;
+        scoreText.y = Screen.getHeight()*0.6;
+        scoreText.text="Final Score ";
+        scoreText.set_color(Color.Black);
+		staticLayer.addChild(scoreText);
 	}
 
 	function parseTileLayers(layerTilemap:Tilemap, tileLayer:TmxTileLayer) {
@@ -116,18 +144,15 @@ class GameState extends State {
 			winZone.y = object.y;
 			winZone.width = object.width;
 			winZone.height = object.height;
-		} else if (compareName(object, "powerFlower")) {
-			var sprite = new Sprite("tiles2");
-			sprite.x = object.x;
-			sprite.y = object.y - object.height;
-			sprite.timeline.gotoAndStop(1);
-			stage.addChild(sprite);
+		} else if (compareName(object, "flyPowerUp")) {
+			new FlyPowerUp(object.x, object.y);
+		} else if (compareName(object, "ghostPowerUp")) {
+			new GhostBulletPowerUp(object.x, object.y);
 		} else if (compareName(object, "spawnZone")) {
 			new Zones(object, this.spawnZones);
-		}else if (compareName(object, "deathZone")) {
+		} else if (compareName(object, "deathZone")) {
 			new Zones(object, this.deathZones);
 		}
-
 	}
 
 	inline function compareName(object:TmxObject, name:String) {
@@ -136,6 +161,14 @@ class GameState extends State {
 
 	override function update(dt:Float) {
 		super.update(dt);
+
+		if (GlobalGameData.ghostBullets) {
+			GlobalGameData.ghostBulletsTime += dt;
+			if (GlobalGameData.ghostBulletsTime > GlobalGameData.ghostBulletsTimeMax) {
+				GlobalGameData.ghostBulletsTime = 0;
+				GlobalGameData.ghostBullets = false;
+			}
+		}
 
 		stage.defaultCamera().setTarget(player.collision.x, player.collision.y);
 
@@ -150,6 +183,9 @@ class GameState extends State {
 		CollisionEngine.overlap(player.collision, enemyCollision, playerVsGhost);
 		CollisionEngine.overlap(player.bulletsCollision, enemyCollision, bulletVsGhost);
 		CollisionEngine.overlap(player.collision, sawCollisions, playerVsSaw);
+
+		CollisionEngine.overlap(player.collision, flyPowerUpCollisions, playerVsFlyPowerUp);
+		CollisionEngine.overlap(player.collision, ghostBulletsCollisions, playerVsGhostBulletPowerUp);
 	}
 
 	function playerVsGhost(playerC:ICollider, ghostC:ICollider) {
@@ -173,6 +209,18 @@ class GameState extends State {
 		changeState(new EndGame(8));
 	}
 
+	function playerVsFlyPowerUp(playerC:ICollider, flyPowerUpC:ICollider) {
+		player.activateFly();
+		var fly:FlyPowerUp = cast flyPowerUpC.userData;
+		fly.destroy();
+	}
+	
+	function playerVsGhostBulletPowerUp(playerC:ICollider, ghostBulletPowerUpC:ICollider) {
+		GlobalGameData.ghostBullets = true;
+		var ghostBullet:GhostBulletPowerUp = cast ghostBulletPowerUpC.userData;
+		ghostBullet.destroy();
+	}
+
 	function bulletVsGhost(bulletC:ICollider, ghostC:ICollider) {
 		var enemey:Ghost = ghostC.userData;
 		enemey.damage();
@@ -181,8 +229,10 @@ class GameState extends State {
 	}
 
 	function bulletVsWorld(worldMapC:ICollider, bulletC:ICollider) {
-		var bullet:Bullet = cast bulletC.userData;
-		bullet.damage();
+		if (!GlobalGameData.ghostBullets) {
+			var bullet:Bullet = cast bulletC.userData;
+			bullet.damage();
+		}
 	}
 
 	function createTouchJoystick() {
@@ -216,8 +266,6 @@ class GameState extends State {
 	private function buildLevel() {
 		switch (this.room) {
 			case 1:
-				var ghost = new Ghost(300, 300, enemyCollision);
-				addChild(ghost);
 				var a = new FastVector2(1230, 332);
 				var b = new FastVector2(1555, 332);
 				var c = new FastVector2(1555, 500);

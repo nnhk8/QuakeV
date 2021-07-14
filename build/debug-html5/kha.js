@@ -9452,6 +9452,58 @@ com_gEngine_display_Stage.prototype = {
 	,__class__: com_gEngine_display_Stage
 	,__properties__: {set_color:"set_color",set_y:"set_y",get_y:"get_y",set_x:"set_x",get_x:"get_x"}
 };
+var com_gEngine_display_StaticLayer = function() {
+	com_gEngine_display_Layer.call(this);
+	this.offset = new kha_math_FastMatrix4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+};
+$hxClasses["com.gEngine.display.StaticLayer"] = com_gEngine_display_StaticLayer;
+com_gEngine_display_StaticLayer.__name__ = "com.gEngine.display.StaticLayer";
+com_gEngine_display_StaticLayer.__super__ = com_gEngine_display_Layer;
+com_gEngine_display_StaticLayer.prototype = $extend(com_gEngine_display_Layer.prototype,{
+	offset: null
+	,render: function(paintMode,transform) {
+		paintMode.render();
+		var proj = paintMode.camera.projection;
+		paintMode.camera.projection = paintMode.camera.orthogonal;
+		var _this = this.offset;
+		var m__00 = 1;
+		var m__10 = 0;
+		var m__20 = 0;
+		var m__30 = -paintMode.camera.width * 0.5;
+		var m__01 = 0;
+		var m__11 = 1;
+		var m__21 = 0;
+		var m__31 = -paintMode.camera.height * 0.5;
+		var m__02 = 0;
+		var m__12 = 0;
+		var m__22 = 1;
+		var m__32 = 0;
+		var m__03 = 0;
+		var m__13 = 0;
+		var m__23 = 0;
+		var m__33 = 1;
+		_this._00 = m__00;
+		_this._10 = m__10;
+		_this._20 = m__20;
+		_this._30 = m__30;
+		_this._01 = m__01;
+		_this._11 = m__11;
+		_this._21 = m__21;
+		_this._31 = m__31;
+		_this._02 = m__02;
+		_this._12 = m__12;
+		_this._22 = m__22;
+		_this._32 = m__32;
+		_this._03 = m__03;
+		_this._13 = m__13;
+		_this._23 = m__23;
+		_this._33 = m__33;
+		com_gEngine_display_Layer.prototype.render.call(this,paintMode,this.offset);
+		paintMode.render();
+		paintMode.camera.projection = proj;
+	}
+	,__class__: com_gEngine_display_StaticLayer
+});
 var com_gEngine_display_Text = function(type) {
 	this.alpha = 1;
 	this.bakedQuadCache = new kha_AlignedQuad();
@@ -19714,6 +19766,43 @@ gameObjects_Bullet.prototype = $extend(com_framework_utils_Entity.prototype,{
 	}
 	,__class__: gameObjects_Bullet
 });
+var gameObjects_FlyPowerUp = function(x,y) {
+	com_framework_utils_Entity.call(this);
+	this.display = new com_gEngine_display_Sprite("flying");
+	this.display.set_smooth(false);
+	this.display.timeline.playAnimation("fly",true);
+	this.display.timeline.frameRate = 0.1;
+	this.display.x = x;
+	this.display.y = y;
+	states_GlobalGameData.simulationLayer.addChild(this.display);
+	this.collision = new com_collision_platformer_CollisionBox();
+	this.collision.width = 32;
+	this.collision.height = 32;
+	this.collision.x = x;
+	this.collision.y = y;
+	this.collision.userData = this;
+	states_GlobalGameData.flyPowerUpCollisions.add(this.collision);
+};
+$hxClasses["gameObjects.FlyPowerUp"] = gameObjects_FlyPowerUp;
+gameObjects_FlyPowerUp.__name__ = "gameObjects.FlyPowerUp";
+gameObjects_FlyPowerUp.__super__ = com_framework_utils_Entity;
+gameObjects_FlyPowerUp.prototype = $extend(com_framework_utils_Entity.prototype,{
+	display: null
+	,collision: null
+	,update: function(dt) {
+		this.collision.update(dt);
+		com_framework_utils_Entity.prototype.update.call(this,dt);
+	}
+	,render: function() {
+		com_framework_utils_Entity.prototype.render.call(this);
+	}
+	,destroy: function() {
+		com_framework_utils_Entity.prototype.destroy.call(this);
+		this.display.removeFromParent();
+		this.collision.removeFromParent();
+	}
+	,__class__: gameObjects_FlyPowerUp
+});
 var gameObjects_Ghost = function(x,y,collisionGroup) {
 	this.dying = false;
 	this.SPEED = 80;
@@ -19801,6 +19890,43 @@ gameObjects_Ghost.prototype = $extend(com_framework_utils_Entity.prototype,{
 	}
 	,__class__: gameObjects_Ghost
 });
+var gameObjects_GhostBulletPowerUp = function(x,y) {
+	com_framework_utils_Entity.call(this);
+	this.display = new com_gEngine_display_Sprite("ghostBullet");
+	this.display.set_smooth(false);
+	this.display.timeline.playAnimation("ghostBullet",true);
+	this.display.timeline.frameRate = 0.1;
+	this.display.x = x;
+	this.display.y = y;
+	states_GlobalGameData.simulationLayer.addChild(this.display);
+	this.collision = new com_collision_platformer_CollisionBox();
+	this.collision.width = 32;
+	this.collision.height = 32;
+	this.collision.x = x;
+	this.collision.y = y;
+	this.collision.userData = this;
+	states_GlobalGameData.ghostBulletsCollisions.add(this.collision);
+};
+$hxClasses["gameObjects.GhostBulletPowerUp"] = gameObjects_GhostBulletPowerUp;
+gameObjects_GhostBulletPowerUp.__name__ = "gameObjects.GhostBulletPowerUp";
+gameObjects_GhostBulletPowerUp.__super__ = com_framework_utils_Entity;
+gameObjects_GhostBulletPowerUp.prototype = $extend(com_framework_utils_Entity.prototype,{
+	display: null
+	,collision: null
+	,update: function(dt) {
+		this.collision.update(dt);
+		com_framework_utils_Entity.prototype.update.call(this,dt);
+	}
+	,render: function() {
+		com_framework_utils_Entity.prototype.render.call(this);
+	}
+	,destroy: function() {
+		com_framework_utils_Entity.prototype.destroy.call(this);
+		this.display.removeFromParent();
+		this.collision.removeFromParent();
+	}
+	,__class__: gameObjects_GhostBulletPowerUp
+});
 var gameObjects_LevelPositions = function() { };
 $hxClasses["gameObjects.LevelPositions"] = gameObjects_LevelPositions;
 gameObjects_LevelPositions.__name__ = "gameObjects.LevelPositions";
@@ -19825,6 +19951,8 @@ var gameObjects_Player = function(x,y,layer) {
 	this.speed = 100;
 	this.lastWallGrabing = 0;
 	this.maxSpeed = 200;
+	this.flyTimeMax = 20;
+	this.flyTime = 0;
 	this.fly = false;
 	com_framework_utils_Entity.call(this);
 	this.display = new com_gEngine_display_Sprite("hero");
@@ -19855,6 +19983,8 @@ gameObjects_Player.prototype = $extend(com_framework_utils_Entity.prototype,{
 	display: null
 	,collision: null
 	,fly: null
+	,flyTime: null
+	,flyTimeMax: null
 	,bulletsCollision: null
 	,maxSpeed: null
 	,lastWallGrabing: null
@@ -19875,6 +20005,13 @@ gameObjects_Player.prototype = $extend(com_framework_utils_Entity.prototype,{
 		if(com_framework_utils_Input.i.isKeyCodePressed(88)) {
 			var bullet = new gameObjects_Bullet(this.collision.x + this.collision.width * 0.5,this.collision.y + this.collision.height * 0.5,this.facingDir,this.bulletsCollision);
 			this.addChild(bullet);
+		}
+		if(this.fly) {
+			this.flyTime += dt;
+			if(this.flyTime > this.flyTimeMax) {
+				this.fly = false;
+				this.flyTime = 0;
+			}
 		}
 		this.collision.update(dt);
 		com_framework_utils_Entity.prototype.update.call(this,dt);
@@ -19974,6 +20111,9 @@ gameObjects_Player.prototype = $extend(com_framework_utils_Entity.prototype,{
 		}
 	}
 	,onAxisChange: function(id,value) {
+	}
+	,activateFly: function() {
+		this.fly = true;
 	}
 	,destroy: function() {
 		com_framework_utils_Entity.prototype.destroy.call(this);
@@ -22919,7 +23059,7 @@ js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl = function(begin,end) {
 	return resultArray.buffer;
 };
 var kha__$Assets_ImageList = function() {
-	this.names = ["chain","explosion","game_over","ghost","hero","tiles2"];
+	this.names = ["chain","explosion","flying","game_over","ghost","ghostBullet","hero","tiles2"];
 	this.tiles2Size = 29965;
 	this.tiles2Description = { name : "tiles2", original_height : 416, file_sizes : [29965], original_width : 128, files : ["tiles2.png"], type : "image"};
 	this.tiles2Name = "tiles2";
@@ -22928,6 +23068,10 @@ var kha__$Assets_ImageList = function() {
 	this.heroDescription = { name : "hero", original_height : 180, file_sizes : [16820], original_width : 225, files : ["hero.png"], type : "image"};
 	this.heroName = "hero";
 	this.hero = null;
+	this.ghostBulletSize = 2071;
+	this.ghostBulletDescription = { name : "ghostBullet", original_height : 54, file_sizes : [2071], original_width : 416, files : ["ghostBullet.png"], type : "image"};
+	this.ghostBulletName = "ghostBullet";
+	this.ghostBullet = null;
 	this.ghostSize = 2967;
 	this.ghostDescription = { name : "ghost", original_height : 60, file_sizes : [2967], original_width : 660, files : ["ghost.png"], type : "image"};
 	this.ghostName = "ghost";
@@ -22936,6 +23080,10 @@ var kha__$Assets_ImageList = function() {
 	this.game_overDescription = { name : "game_over", original_height : 300, file_sizes : [25080], original_width : 300, files : ["game_over.png"], type : "image"};
 	this.game_overName = "game_over";
 	this.game_over = null;
+	this.flyingSize = 1882;
+	this.flyingDescription = { name : "flying", original_height : 32, file_sizes : [1882], original_width : 288, files : ["flying.png"], type : "image"};
+	this.flyingName = "flying";
+	this.flying = null;
 	this.explosionSize = 53692;
 	this.explosionDescription = { name : "explosion", original_height : 256, file_sizes : [53692], original_width : 260, files : ["explosion.png"], type : "image"};
 	this.explosionName = "explosion";
@@ -22977,6 +23125,19 @@ kha__$Assets_ImageList.prototype = {
 		this.explosion.unload();
 		this.explosion = null;
 	}
+	,flying: null
+	,flyingName: null
+	,flyingDescription: null
+	,flyingSize: null
+	,flyingLoad: function(done,failure) {
+		kha_Assets.loadImage("flying",function(image) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 136, className : "kha._Assets.ImageList", methodName : "flyingLoad"});
+	}
+	,flyingUnload: function() {
+		this.flying.unload();
+		this.flying = null;
+	}
 	,game_over: null
 	,game_overName: null
 	,game_overDescription: null
@@ -23002,6 +23163,19 @@ kha__$Assets_ImageList.prototype = {
 	,ghostUnload: function() {
 		this.ghost.unload();
 		this.ghost = null;
+	}
+	,ghostBullet: null
+	,ghostBulletName: null
+	,ghostBulletDescription: null
+	,ghostBulletSize: null
+	,ghostBulletLoad: function(done,failure) {
+		kha_Assets.loadImage("ghostBullet",function(image) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 136, className : "kha._Assets.ImageList", methodName : "ghostBulletLoad"});
+	}
+	,ghostBulletUnload: function() {
+		this.ghostBullet.unload();
+		this.ghostBullet = null;
 	}
 	,hero: null
 	,heroName: null
@@ -23054,8 +23228,8 @@ var kha__$Assets_BlobList = function() {
 	this.lvl2_tmxDescription = { name : "lvl2_tmx", file_sizes : [7089], files : ["lvl2.tmx"], type : "blob"};
 	this.lvl2_tmxName = "lvl2_tmx";
 	this.lvl2_tmx = null;
-	this.lvl1_tmxSize = 12147;
-	this.lvl1_tmxDescription = { name : "lvl1_tmx", file_sizes : [12147], files : ["lvl1.tmx"], type : "blob"};
+	this.lvl1_tmxSize = 12412;
+	this.lvl1_tmxDescription = { name : "lvl1_tmx", file_sizes : [12412], files : ["lvl1.tmx"], type : "blob"};
 	this.lvl1_tmxName = "lvl1_tmx";
 	this.lvl1_tmx = null;
 };
@@ -53180,6 +53354,8 @@ states_EndGame.prototype = $extend(com_framework_utils_State.prototype,{
 	,__class__: states_EndGame
 });
 var states_GameState = function(room) {
+	this.ghostBulletsCollisions = new com_collision_platformer_CollisionGroup();
+	this.flyPowerUpCollisions = new com_collision_platformer_CollisionGroup();
 	this.sawCollisions = new com_collision_platformer_CollisionGroup();
 	this.enemyCollision = new com_collision_platformer_CollisionGroup();
 	this.deathZones = new com_collision_platformer_CollisionGroup();
@@ -53197,6 +53373,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	worldMap: null
 	,player: null
 	,simulationLayer: null
+	,staticLayer: null
 	,touchJoystick: null
 	,room: null
 	,winZone: null
@@ -53204,27 +53381,44 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	,deathZones: null
 	,enemyCollision: null
 	,sawCollisions: null
+	,flyPowerUpCollisions: null
+	,ghostBulletsCollisions: null
 	,load: function(resources) {
 		resources.add(new com_loading_basicResources_DataLoader("lvl" + this.room + "_tmx"));
 		var atlas = new com_loading_basicResources_JoinAtlas(2048,2048);
 		atlas.add(new com_loading_basicResources_TilesheetLoader("tiles2",32,32,0));
 		atlas.add(new com_loading_basicResources_SpriteSheetLoader("hero",45,60,0,[new com_loading_basicResources_Sequence("fall",[0]),new com_loading_basicResources_Sequence("slide",[0]),new com_loading_basicResources_Sequence("jump",[1]),new com_loading_basicResources_Sequence("run",[2,3,4,5,6,7,8,9]),new com_loading_basicResources_Sequence("idle",[10]),new com_loading_basicResources_Sequence("wallGrab",[11])]));
+		atlas.add(new com_loading_basicResources_SpriteSheetLoader("flying",32,32,0,[new com_loading_basicResources_Sequence("fly",[0,1,2,3,4,5,6,7,8])]));
+		atlas.add(new com_loading_basicResources_SpriteSheetLoader("ghostBullet",52,54,0,[new com_loading_basicResources_Sequence("ghostBullet",[0,1,2,3,4,5,6,7])]));
 		atlas.add(new com_loading_basicResources_SpriteSheetLoader("ghost",44,30,0,[new com_loading_basicResources_Sequence("idle",[0,1,2,3,4,5,6,7,8,9]),new com_loading_basicResources_Sequence("appear",[15,16,17,18]),new com_loading_basicResources_Sequence("desappear",[19,20,21,22])]));
 		atlas.add(new com_loading_basicResources_SpriteSheetLoader("explosion",51,64,0,[new com_loading_basicResources_Sequence("bullet",[0]),new com_loading_basicResources_Sequence("boom",[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17])]));
 		atlas.add(new com_loading_basicResources_SpriteSheetLoader("chain",38,38,0,[new com_loading_basicResources_Sequence("spin",[0,1,2,3,4,5,6,7])]));
+		atlas.add(new com_loading_basicResources_FontLoader("Kenney_Thick",20));
 		resources.add(atlas);
 	}
 	,init: function() {
 		this.stageColor(0.5,.5,0.5);
+		states_GlobalGameData.sawCollisions = this.sawCollisions;
+		states_GlobalGameData.flyPowerUpCollisions = this.flyPowerUpCollisions;
+		states_GlobalGameData.ghostBulletsCollisions = this.ghostBulletsCollisions;
 		this.simulationLayer = new com_gEngine_display_Layer();
+		this.staticLayer = new com_gEngine_display_StaticLayer();
 		this.stage.addChild(this.simulationLayer);
+		this.stage.addChild(this.staticLayer);
+		states_GlobalGameData.staticLayer = this.staticLayer;
 		states_GlobalGameData.simulationLayer = this.simulationLayer;
 		this.worldMap = new com_collision_platformer_Tilemap("lvl" + this.room + "_tmx");
 		this.worldMap.init($bind(this,this.parseTileLayers),$bind(this,this.parseMapObjects));
 		this.stage.cameras[0].limits(32,0,this.worldMap.widthIntTiles * 32 - 64,this.worldMap.heightInTiles * 32);
 		this.createTouchJoystick();
-		states_GlobalGameData.sawCollisions = this.sawCollisions;
 		this.buildLevel();
+		var scoreText = new com_gEngine_display_Text("Kenney_Thick");
+		scoreText.set_smooth(false);
+		scoreText.x = kha_System.windowWidth() * 0.38;
+		scoreText.y = kha_System.windowHeight() * 0.6;
+		scoreText.set_text("Final Score ");
+		scoreText.set_color(-16777216);
+		this.staticLayer.addChild(scoreText);
 	}
 	,parseTileLayers: function(layerTilemap,tileLayer) {
 		if(!tileLayer.properties.exists("noCollision")) {
@@ -53245,12 +53439,10 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 			this.winZone.y = object.y;
 			this.winZone.width = object.width;
 			this.winZone.height = object.height;
-		} else if(object.name.toLowerCase() == "powerFlower".toLowerCase()) {
-			var sprite = new com_gEngine_display_Sprite("tiles2");
-			sprite.x = object.x;
-			sprite.y = object.y - object.height;
-			sprite.timeline.gotoAndStop(1);
-			this.stage.addChild(sprite);
+		} else if(object.name.toLowerCase() == "flyPowerUp".toLowerCase()) {
+			new gameObjects_FlyPowerUp(object.x,object.y);
+		} else if(object.name.toLowerCase() == "ghostPowerUp".toLowerCase()) {
+			new gameObjects_GhostBulletPowerUp(object.x,object.y);
 		} else if(object.name.toLowerCase() == "spawnZone".toLowerCase()) {
 			new gameObjects_Zones(object,this.spawnZones);
 		} else if(object.name.toLowerCase() == "deathZone".toLowerCase()) {
@@ -53262,6 +53454,13 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	}
 	,update: function(dt) {
 		com_framework_utils_State.prototype.update.call(this,dt);
+		if(states_GlobalGameData.ghostBullets) {
+			states_GlobalGameData.ghostBulletsTime += dt;
+			if(states_GlobalGameData.ghostBulletsTime > states_GlobalGameData.ghostBulletsTimeMax) {
+				states_GlobalGameData.ghostBulletsTime = 0;
+				states_GlobalGameData.ghostBullets = false;
+			}
+		}
 		this.stage.cameras[0].setTarget(this.player.collision.x,this.player.collision.y);
 		com_collision_platformer_CollisionEngine.collide(this.player.collision,this.worldMap.collision);
 		if(com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.winZone)) {
@@ -53273,6 +53472,8 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.enemyCollision,$bind(this,this.playerVsGhost));
 		com_collision_platformer_CollisionEngine.overlap(this.player.bulletsCollision,this.enemyCollision,$bind(this,this.bulletVsGhost));
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.sawCollisions,$bind(this,this.playerVsSaw));
+		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.flyPowerUpCollisions,$bind(this,this.playerVsFlyPowerUp));
+		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.ghostBulletsCollisions,$bind(this,this.playerVsGhostBulletPowerUp));
 	}
 	,playerVsGhost: function(playerC,ghostC) {
 		this.changeState(new states_EndGame(8));
@@ -53294,6 +53495,16 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	,playerVsDeathZone: function(playerC,spawnZoneC) {
 		this.changeState(new states_EndGame(8));
 	}
+	,playerVsFlyPowerUp: function(playerC,flyPowerUpC) {
+		this.player.activateFly();
+		var fly = flyPowerUpC.userData;
+		fly.destroy();
+	}
+	,playerVsGhostBulletPowerUp: function(playerC,ghostBulletPowerUpC) {
+		states_GlobalGameData.ghostBullets = true;
+		var ghostBullet = ghostBulletPowerUpC.userData;
+		ghostBullet.destroy();
+	}
 	,bulletVsGhost: function(bulletC,ghostC) {
 		var enemey = ghostC.userData;
 		enemey.damage();
@@ -53301,8 +53512,10 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		bullet.die();
 	}
 	,bulletVsWorld: function(worldMapC,bulletC) {
-		var bullet = bulletC.userData;
-		bullet.damage();
+		if(!states_GlobalGameData.ghostBullets) {
+			var bullet = bulletC.userData;
+			bullet.damage();
+		}
 	}
 	,createTouchJoystick: function() {
 		this.touchJoystick = new com_framework_utils_VirtualGamepad();
@@ -53327,8 +53540,6 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	}
 	,buildLevel: function() {
 		if(this.room == 1) {
-			var ghost = new gameObjects_Ghost(300,300,this.enemyCollision);
-			this.addChild(ghost);
 			var a = new kha_math_FastVector2(1230,332);
 			var b = new kha_math_FastVector2(1555,332);
 			var c = new kha_math_FastVector2(1555,500);
@@ -53348,8 +53559,10 @@ states_GlobalGameData.destroy = function() {
 	states_GlobalGameData.simulationLayer = null;
 	states_GlobalGameData.player = null;
 	states_GlobalGameData.winState = true;
-	states_GlobalGameData.levelPath = null;
 	states_GlobalGameData.sawCollisions = null;
+	states_GlobalGameData.flyPowerUpCollisions = null;
+	states_GlobalGameData.ghostBulletsCollisions = null;
+	states_GlobalGameData.staticLayer = null;
 };
 function $getIterator(o) { if( o instanceof Array ) return new haxe_iterators_ArrayIterator(o); else return o.iterator(); }
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $global.$haxeUID++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = m.bind(o); o.hx__closures__[m.__id__] = f; } return f; }
@@ -53762,6 +53975,9 @@ kha_netsync_Session.RPC_SERVER = 0;
 kha_netsync_Session.RPC_ALL = 1;
 kha_netsync_SyncBuilder.nextId = 0;
 kha_netsync_SyncBuilder.objects = [];
+states_GlobalGameData.ghostBullets = false;
+states_GlobalGameData.ghostBulletsTime = 0;
+states_GlobalGameData.ghostBulletsTimeMax = 20;
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
 

@@ -15,6 +15,9 @@ class Player extends Entity {
 	public var display:Sprite;
 	public var collision:CollisionBox;
 	public var fly:Bool = false;
+	public var flyTime:Float = 0;
+	public var flyTimeMax:Float = 20;
+
 
 	public var bulletsCollision:CollisionGroup;
 
@@ -67,6 +70,13 @@ class Player extends Entity {
 			var bullet:Bullet = new Bullet(collision.x + collision.width * 0.5, collision.y + collision.height * 0.5,facingDir,bulletsCollision);
 			addChild(bullet);
 		}
+		if (fly){
+			flyTime+=dt;
+			if (flyTime>flyTimeMax){
+				this.fly=false;
+				flyTime = 0;
+			}
+		} 
 		collision.update(dt);
 
 		super.update(dt);
@@ -154,6 +164,9 @@ class Player extends Entity {
 
 	public function onAxisChange(id:Int, value:Float) {}
 
+	public function activateFly(){
+		fly=true;
+	}
 
 	override function destroy() {
 		super.destroy();
