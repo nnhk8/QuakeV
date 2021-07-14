@@ -9,8 +9,8 @@ _Obligatorio para la electiva de Programación de videojuegos 1 con el lenguaje 
 * Flechas - movimiento
 
 ### PowerUps  
-* Balas que atraviesan paredes por tiempo (facilita matar ghosts)
-* Volar pulsando Espacio reiteradas veces
+* Balas que atraviesan paredes por tiempo limitado (facilita matar ghosts)
+* Volar pulsando Espacio reiteradas veces por tiempo limitado
 ### Enemigos
 * Ghosts voladores que se spawnean de las esquinas del mapa según por donde pase el jugador y lo persiguen, quitan 1 vida.
 * Sierras Eléctricas con movimientos predeterminados según el nivel quitan 1 de vida y por 5 seg no hace daño.
