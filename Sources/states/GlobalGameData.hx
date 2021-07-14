@@ -32,5 +32,6 @@ class GlobalGameData {
 		flyPowerUpCollisions = null;
 		ghostBulletsCollisions = null;
 		staticLayer=null;
+		enemyCollisions = null;
 	}
 }

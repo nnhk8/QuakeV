@@ -58,7 +58,7 @@ class GameState extends State {
 	var flyPowerUpText:Text;
 	var ghostBulletPowerUpText:Text;
 
-	var enemyCollision:CollisionGroup = new CollisionGroup();
+	var enemyCollisions:CollisionGroup = new CollisionGroup();
 	var sawCollisions:CollisionGroup = new CollisionGroup();
 	var flyPowerUpCollisions:CollisionGroup = new CollisionGroup();
 	var ghostBulletsCollisions:CollisionGroup = new CollisionGroup();
@@ -114,54 +114,14 @@ class GameState extends State {
 
 	override function init() {
 		stageColor(0.5, .5, 0.5);
-		GlobalGameData.sawCollisions = this.sawCollisions;
-		GlobalGameData.flyPowerUpCollisions = this.flyPowerUpCollisions;
-		GlobalGameData.ghostBulletsCollisions = this.ghostBulletsCollisions;
-		simulationLayer = new Layer();
-		staticLayer = new StaticLayer();
-		stage.addChild(simulationLayer);
-		stage.addChild(staticLayer);
-		GlobalGameData.staticLayer = staticLayer;
-		GlobalGameData.simulationLayer = simulationLayer;
+		this.initGroupCollisions();
+		this.initLayers();
 		worldMap = new Tilemap("lvl" + room + "_tmx");
-
 		worldMap.init(parseTileLayers, parseMapObjects);
 		stage.defaultCamera().limits(32, 0, worldMap.widthIntTiles * 32, worldMap.heightInTiles * 32);
 		createTouchJoystick();
 		this.buildLevel();
-
-		
-		lifeText = new Text("Kenney_Thick");
-		lifeText.smooth = false;
-		lifeText.x = Screen.getWidth() * 0.1;
-		lifeText.y = Screen.getHeight() * 0.1;
-		lifeText.text = "Lifes "+GlobalGameData.playerLifes;
-		lifeText.set_color(Color.Red);
-		staticLayer.addChild(lifeText);
-
-		levelText = new Text("Kenney_Thick");
-		levelText.smooth = false;
-		levelText.x = Screen.getWidth() * 0.9;
-		levelText.y = Screen.getHeight() * 0.1;
-		levelText.text = "Level "+room;
-		levelText.set_color(Color.Blue);
-		staticLayer.addChild(levelText);
-
-		flyPowerUpText = new Text("Kenney_Thick");
-		flyPowerUpText.smooth = false;
-		flyPowerUpText.x = Screen.getWidth() * 0.01;
-		flyPowerUpText.y = Screen.getHeight() * 0.94;
-		flyPowerUpText.text = "Fly PowerUp ";
-		flyPowerUpText.set_color(Color.Green);
-		staticLayer.addChild(flyPowerUpText);
-
-		ghostBulletPowerUpText = new Text("Kenney_Thick");
-		ghostBulletPowerUpText.smooth = false;
-		ghostBulletPowerUpText.x = Screen.getWidth() * 0.01;
-		ghostBulletPowerUpText.y = Screen.getHeight() * 0.97;
-		ghostBulletPowerUpText.text = "Ghost Bullet Damage PowerUp ";
-		ghostBulletPowerUpText.set_color(Color.Green);
-		staticLayer.addChild(ghostBulletPowerUpText);
+		this.initTexts();
 	}
 
 	function parseTileLayers(layerTilemap:Tilemap, tileLayer:TmxTileLayer) {
@@ -202,10 +162,7 @@ class GameState extends State {
 
 	override function update(dt:Float) {
 		super.update(dt);
-		lifeText.text = "Lifes "+GlobalGameData.playerLifes;
-		flyPowerUpText.text = "Fly PowerUp "+Std.int(player.flyTime)+ " of " + player.flyTimeMax;
-		ghostBulletPowerUpText.text = "Ghost Bullet Damage PowerUp "+Std.int(GlobalGameData.ghostBulletsTime) + " of " + GlobalGameData.ghostBulletsTimeMax;
-
+		this.updateTexts();
 		if (GlobalGameData.ghostBullets) {
 			GlobalGameData.ghostBulletsTime += dt;
 			if (GlobalGameData.ghostBulletsTime > GlobalGameData.ghostBulletsTimeMax) {
@@ -217,24 +174,30 @@ class GameState extends State {
 		stage.defaultCamera().setTarget(player.collision.x, player.collision.y);
 
 		CollisionEngine.collide(player.collision, worldMap.collision);
-		if (CollisionEngine.overlap(player.collision, winZone)) {
-			room++;
-			if (room == 4) {
-				changeState(new EndGame(room, true));
-			} else {
-				changeState(new GameState(room));
-			}
-		}
+		CollisionEngine.overlap(player.collision, winZone, win);
 		CollisionEngine.overlap(player.collision, spawnZones, playerVsSpawnZone);
 		CollisionEngine.overlap(player.collision, deathZones, playerVsDeathZone);
-
 		CollisionEngine.overlap(worldMap.collision, player.bulletsCollision, bulletVsWorld);
-		CollisionEngine.overlap(player.collision, enemyCollision, playerVsGhost);
-		CollisionEngine.overlap(player.bulletsCollision, enemyCollision, bulletVsGhost);
+		CollisionEngine.overlap(player.collision, enemyCollisions, playerVsGhost);
+		CollisionEngine.overlap(player.bulletsCollision, enemyCollisions, bulletVsGhost);
 		CollisionEngine.overlap(player.collision, sawCollisions, playerVsSaw);
-
 		CollisionEngine.overlap(player.collision, flyPowerUpCollisions, playerVsFlyPowerUp);
 		CollisionEngine.overlap(player.collision, ghostBulletsCollisions, playerVsGhostBulletPowerUp);
+	}
+
+	private function updateTexts(){
+		lifeText.text = "Lifes "+GlobalGameData.playerLifes;
+		flyPowerUpText.text = "Fly PowerUp "+Std.int(player.flyTime)+ " of " + player.flyTimeMax;
+		ghostBulletPowerUpText.text = "Ghost Bullet Damage PowerUp "+Std.int(GlobalGameData.ghostBulletsTime) + " of " + GlobalGameData.ghostBulletsTimeMax;
+	}
+
+	function win(playerC:ICollider, winZoneC:ICollider){
+		room++;
+		if (room == 4) {
+			changeState(new EndGame(room, true));
+		} else {
+			changeState(new GameState(room));
+		}
 	}
 
 	function playerVsGhost(playerC:ICollider, ghostC:ICollider) {
@@ -266,7 +229,7 @@ class GameState extends State {
 		SoundManager.playFx("ghostAppear");
 		var spawnPositions = LevelPositions.getSpawnPoints();
 		for (pos in spawnPositions) {
-			addChild(new Ghost(pos.x, pos.y, this.enemyCollision));
+			addChild(new Ghost(pos.x, pos.y));
 		}
 		var zone:Zones = spawnZoneC.userData;
 		zone.destroy();
@@ -394,5 +357,56 @@ class GameState extends State {
 				var saw8 = new Saw(LevelPositions.getLinearPath(m, n), 5, PlayMode.Pong);
 				addChild(saw8);
 		}
+	}
+	
+	private function initTexts(){	
+		lifeText = new Text("Kenney_Thick");
+		lifeText.smooth = false;
+		lifeText.x = Screen.getWidth() * 0.1;
+		lifeText.y = Screen.getHeight() * 0.1;
+		lifeText.text = "Lifes "+GlobalGameData.playerLifes;
+		lifeText.set_color(Color.Red);
+		staticLayer.addChild(lifeText);
+
+		levelText = new Text("Kenney_Thick");
+		levelText.smooth = false;
+		levelText.x = Screen.getWidth() * 0.9;
+		levelText.y = Screen.getHeight() * 0.1;
+		levelText.text = "Level "+room;
+		levelText.set_color(Color.Blue);
+		staticLayer.addChild(levelText);
+
+		flyPowerUpText = new Text("Kenney_Thick");
+		flyPowerUpText.smooth = false;
+		flyPowerUpText.x = Screen.getWidth() * 0.01;
+		flyPowerUpText.y = Screen.getHeight() * 0.94;
+		flyPowerUpText.text = "Fly PowerUp ";
+		flyPowerUpText.set_color(Color.Green);
+		staticLayer.addChild(flyPowerUpText);
+
+		ghostBulletPowerUpText = new Text("Kenney_Thick");
+		ghostBulletPowerUpText.smooth = false;
+		ghostBulletPowerUpText.x = Screen.getWidth() * 0.01;
+		ghostBulletPowerUpText.y = Screen.getHeight() * 0.97;
+		ghostBulletPowerUpText.text = "Ghost Bullet Damage PowerUp ";
+		ghostBulletPowerUpText.set_color(Color.Green);
+		staticLayer.addChild(ghostBulletPowerUpText);
+	}
+
+	private function initGroupCollisions(){
+		GlobalGameData.sawCollisions = this.sawCollisions;
+		GlobalGameData.flyPowerUpCollisions = this.flyPowerUpCollisions;
+		GlobalGameData.ghostBulletsCollisions = this.ghostBulletsCollisions;
+		GlobalGameData.enemyCollisions = this.enemyCollisions;
+	}
+
+	private function initLayers(){
+		simulationLayer = new Layer();
+		staticLayer = new StaticLayer();
+		stage.addChild(simulationLayer);
+		stage.addChild(staticLayer);
+		GlobalGameData.staticLayer = staticLayer;
+		GlobalGameData.simulationLayer = simulationLayer;
+
 	}
 }

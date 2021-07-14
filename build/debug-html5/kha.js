@@ -19843,7 +19843,7 @@ gameObjects_FlyPowerUp.prototype = $extend(com_framework_utils_Entity.prototype,
 	}
 	,__class__: gameObjects_FlyPowerUp
 });
-var gameObjects_Ghost = function(x,y,collisionGroup) {
+var gameObjects_Ghost = function(x,y) {
 	this.dying = false;
 	this.SPEED = 80;
 	com_framework_utils_Entity.call(this);
@@ -19863,7 +19863,7 @@ var gameObjects_Ghost = function(x,y,collisionGroup) {
 	this.collision.height = 40;
 	this.collision.x = x;
 	this.collision.y = y;
-	collisionGroup.add(this.collision);
+	states_GlobalGameData.enemyCollisions.add(this.collision);
 	this.collision.userData = this;
 	this.facingDir = new kha_math_FastVector2(1,0);
 };
@@ -19995,7 +19995,7 @@ var gameObjects_Player = function(x,y,layer) {
 	this.speed = 100;
 	this.lastWallGrabing = 0;
 	this.maxSpeed = 200;
-	this.flyTimeMax = 20;
+	this.flyTimeMax = 10;
 	this.flyTime = 0;
 	this.fly = false;
 	com_framework_utils_Entity.call(this);
@@ -23502,8 +23502,8 @@ kha__$Assets_SoundList.prototype = {
 };
 var kha__$Assets_BlobList = function() {
 	this.names = ["lvl1_tmx","lvl2_tmx","lvl3_tmx"];
-	this.lvl3_tmxSize = 15588;
-	this.lvl3_tmxDescription = { name : "lvl3_tmx", file_sizes : [15588], files : ["lvl3.tmx"], type : "blob"};
+	this.lvl3_tmxSize = 15604;
+	this.lvl3_tmxDescription = { name : "lvl3_tmx", file_sizes : [15604], files : ["lvl3.tmx"], type : "blob"};
 	this.lvl3_tmxName = "lvl3_tmx";
 	this.lvl3_tmx = null;
 	this.lvl2_tmxSize = 15838;
@@ -53664,7 +53664,7 @@ var states_GameState = function(room) {
 	this.ghostBulletsCollisions = new com_collision_platformer_CollisionGroup();
 	this.flyPowerUpCollisions = new com_collision_platformer_CollisionGroup();
 	this.sawCollisions = new com_collision_platformer_CollisionGroup();
-	this.enemyCollision = new com_collision_platformer_CollisionGroup();
+	this.enemyCollisions = new com_collision_platformer_CollisionGroup();
 	this.deathZones = new com_collision_platformer_CollisionGroup();
 	this.spawnZones = new com_collision_platformer_CollisionGroup();
 	this.room = room;
@@ -53687,7 +53687,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	,levelText: null
 	,flyPowerUpText: null
 	,ghostBulletPowerUpText: null
-	,enemyCollision: null
+	,enemyCollisions: null
 	,sawCollisions: null
 	,flyPowerUpCollisions: null
 	,ghostBulletsCollisions: null
@@ -53715,56 +53715,14 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	}
 	,init: function() {
 		this.stageColor(0.5,.5,0.5);
-		states_GlobalGameData.sawCollisions = this.sawCollisions;
-		states_GlobalGameData.flyPowerUpCollisions = this.flyPowerUpCollisions;
-		states_GlobalGameData.ghostBulletsCollisions = this.ghostBulletsCollisions;
-		this.simulationLayer = new com_gEngine_display_Layer();
-		this.staticLayer = new com_gEngine_display_StaticLayer();
-		this.stage.addChild(this.simulationLayer);
-		this.stage.addChild(this.staticLayer);
-		states_GlobalGameData.staticLayer = this.staticLayer;
-		states_GlobalGameData.simulationLayer = this.simulationLayer;
+		this.initGroupCollisions();
+		this.initLayers();
 		this.worldMap = new com_collision_platformer_Tilemap("lvl" + this.room + "_tmx");
 		this.worldMap.init($bind(this,this.parseTileLayers),$bind(this,this.parseMapObjects));
 		this.stage.cameras[0].limits(32,0,this.worldMap.widthIntTiles * 32,this.worldMap.heightInTiles * 32);
 		this.createTouchJoystick();
 		this.buildLevel();
-		this.lifeText = new com_gEngine_display_Text("Kenney_Thick");
-		this.lifeText.set_smooth(false);
-		var tmp = kha_System.windowWidth();
-		this.lifeText.x = tmp * 0.1;
-		var tmp = kha_System.windowHeight();
-		this.lifeText.y = tmp * 0.1;
-		this.lifeText.set_text("Lifes " + states_GlobalGameData.playerLifes);
-		this.lifeText.set_color(-65536);
-		this.staticLayer.addChild(this.lifeText);
-		this.levelText = new com_gEngine_display_Text("Kenney_Thick");
-		this.levelText.set_smooth(false);
-		var tmp = kha_System.windowWidth();
-		this.levelText.x = tmp * 0.9;
-		var tmp = kha_System.windowHeight();
-		this.levelText.y = tmp * 0.1;
-		this.levelText.set_text("Level " + this.room);
-		this.levelText.set_color(-16776961);
-		this.staticLayer.addChild(this.levelText);
-		this.flyPowerUpText = new com_gEngine_display_Text("Kenney_Thick");
-		this.flyPowerUpText.set_smooth(false);
-		var tmp = kha_System.windowWidth();
-		this.flyPowerUpText.x = tmp * 0.01;
-		var tmp = kha_System.windowHeight();
-		this.flyPowerUpText.y = tmp * 0.94;
-		this.flyPowerUpText.set_text("Fly PowerUp ");
-		this.flyPowerUpText.set_color(-16711936);
-		this.staticLayer.addChild(this.flyPowerUpText);
-		this.ghostBulletPowerUpText = new com_gEngine_display_Text("Kenney_Thick");
-		this.ghostBulletPowerUpText.set_smooth(false);
-		var tmp = kha_System.windowWidth();
-		this.ghostBulletPowerUpText.x = tmp * 0.01;
-		var tmp = kha_System.windowHeight();
-		this.ghostBulletPowerUpText.y = tmp * 0.97;
-		this.ghostBulletPowerUpText.set_text("Ghost Bullet Damage PowerUp ");
-		this.ghostBulletPowerUpText.set_color(-16711936);
-		this.staticLayer.addChild(this.ghostBulletPowerUpText);
+		this.initTexts();
 	}
 	,parseTileLayers: function(layerTilemap,tileLayer) {
 		if(!tileLayer.properties.exists("noCollision")) {
@@ -53801,9 +53759,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	}
 	,update: function(dt) {
 		com_framework_utils_State.prototype.update.call(this,dt);
-		this.lifeText.set_text("Lifes " + states_GlobalGameData.playerLifes);
-		this.flyPowerUpText.set_text("Fly PowerUp " + (this.player.flyTime | 0) + " of " + this.player.flyTimeMax);
-		this.ghostBulletPowerUpText.set_text("Ghost Bullet Damage PowerUp " + (states_GlobalGameData.ghostBulletsTime | 0) + " of " + states_GlobalGameData.ghostBulletsTimeMax);
+		this.updateTexts();
 		if(states_GlobalGameData.ghostBullets) {
 			states_GlobalGameData.ghostBulletsTime += dt;
 			if(states_GlobalGameData.ghostBulletsTime > states_GlobalGameData.ghostBulletsTimeMax) {
@@ -53813,22 +53769,28 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		}
 		this.stage.cameras[0].setTarget(this.player.collision.x,this.player.collision.y);
 		com_collision_platformer_CollisionEngine.collide(this.player.collision,this.worldMap.collision);
-		if(com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.winZone)) {
-			this.room++;
-			if(this.room == 4) {
-				this.changeState(new states_EndGame(this.room,true));
-			} else {
-				this.changeState(new states_GameState(this.room));
-			}
-		}
+		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.winZone,$bind(this,this.win));
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.spawnZones,$bind(this,this.playerVsSpawnZone));
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.deathZones,$bind(this,this.playerVsDeathZone));
 		com_collision_platformer_CollisionEngine.overlap(this.worldMap.collision,this.player.bulletsCollision,$bind(this,this.bulletVsWorld));
-		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.enemyCollision,$bind(this,this.playerVsGhost));
-		com_collision_platformer_CollisionEngine.overlap(this.player.bulletsCollision,this.enemyCollision,$bind(this,this.bulletVsGhost));
+		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.enemyCollisions,$bind(this,this.playerVsGhost));
+		com_collision_platformer_CollisionEngine.overlap(this.player.bulletsCollision,this.enemyCollisions,$bind(this,this.bulletVsGhost));
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.sawCollisions,$bind(this,this.playerVsSaw));
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.flyPowerUpCollisions,$bind(this,this.playerVsFlyPowerUp));
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.ghostBulletsCollisions,$bind(this,this.playerVsGhostBulletPowerUp));
+	}
+	,updateTexts: function() {
+		this.lifeText.set_text("Lifes " + states_GlobalGameData.playerLifes);
+		this.flyPowerUpText.set_text("Fly PowerUp " + (this.player.flyTime | 0) + " of " + this.player.flyTimeMax);
+		this.ghostBulletPowerUpText.set_text("Ghost Bullet Damage PowerUp " + (states_GlobalGameData.ghostBulletsTime | 0) + " of " + states_GlobalGameData.ghostBulletsTimeMax);
+	}
+	,win: function(playerC,winZoneC) {
+		this.room++;
+		if(this.room == 4) {
+			this.changeState(new states_EndGame(this.room,true));
+		} else {
+			this.changeState(new states_GameState(this.room));
+		}
 	}
 	,playerVsGhost: function(playerC,ghostC) {
 		com_soundLib_SoundManager.playFx("hurt");
@@ -53860,7 +53822,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		while(_g < spawnPositions.length) {
 			var pos = spawnPositions[_g];
 			++_g;
-			this.addChild(new gameObjects_Ghost(pos.x,pos.y,this.enemyCollision));
+			this.addChild(new gameObjects_Ghost(pos.x,pos.y));
 		}
 		var zone = spawnZoneC.userData;
 		zone.destroy();
@@ -53972,6 +53934,58 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 			break;
 		}
 	}
+	,initTexts: function() {
+		this.lifeText = new com_gEngine_display_Text("Kenney_Thick");
+		this.lifeText.set_smooth(false);
+		var tmp = kha_System.windowWidth();
+		this.lifeText.x = tmp * 0.1;
+		var tmp = kha_System.windowHeight();
+		this.lifeText.y = tmp * 0.1;
+		this.lifeText.set_text("Lifes " + states_GlobalGameData.playerLifes);
+		this.lifeText.set_color(-65536);
+		this.staticLayer.addChild(this.lifeText);
+		this.levelText = new com_gEngine_display_Text("Kenney_Thick");
+		this.levelText.set_smooth(false);
+		var tmp = kha_System.windowWidth();
+		this.levelText.x = tmp * 0.9;
+		var tmp = kha_System.windowHeight();
+		this.levelText.y = tmp * 0.1;
+		this.levelText.set_text("Level " + this.room);
+		this.levelText.set_color(-16776961);
+		this.staticLayer.addChild(this.levelText);
+		this.flyPowerUpText = new com_gEngine_display_Text("Kenney_Thick");
+		this.flyPowerUpText.set_smooth(false);
+		var tmp = kha_System.windowWidth();
+		this.flyPowerUpText.x = tmp * 0.01;
+		var tmp = kha_System.windowHeight();
+		this.flyPowerUpText.y = tmp * 0.94;
+		this.flyPowerUpText.set_text("Fly PowerUp ");
+		this.flyPowerUpText.set_color(-16711936);
+		this.staticLayer.addChild(this.flyPowerUpText);
+		this.ghostBulletPowerUpText = new com_gEngine_display_Text("Kenney_Thick");
+		this.ghostBulletPowerUpText.set_smooth(false);
+		var tmp = kha_System.windowWidth();
+		this.ghostBulletPowerUpText.x = tmp * 0.01;
+		var tmp = kha_System.windowHeight();
+		this.ghostBulletPowerUpText.y = tmp * 0.97;
+		this.ghostBulletPowerUpText.set_text("Ghost Bullet Damage PowerUp ");
+		this.ghostBulletPowerUpText.set_color(-16711936);
+		this.staticLayer.addChild(this.ghostBulletPowerUpText);
+	}
+	,initGroupCollisions: function() {
+		states_GlobalGameData.sawCollisions = this.sawCollisions;
+		states_GlobalGameData.flyPowerUpCollisions = this.flyPowerUpCollisions;
+		states_GlobalGameData.ghostBulletsCollisions = this.ghostBulletsCollisions;
+		states_GlobalGameData.enemyCollisions = this.enemyCollisions;
+	}
+	,initLayers: function() {
+		this.simulationLayer = new com_gEngine_display_Layer();
+		this.staticLayer = new com_gEngine_display_StaticLayer();
+		this.stage.addChild(this.simulationLayer);
+		this.stage.addChild(this.staticLayer);
+		states_GlobalGameData.staticLayer = this.staticLayer;
+		states_GlobalGameData.simulationLayer = this.simulationLayer;
+	}
 	,__class__: states_GameState
 });
 var states_GlobalGameData = function() { };
@@ -53985,6 +53999,7 @@ states_GlobalGameData.destroy = function() {
 	states_GlobalGameData.flyPowerUpCollisions = null;
 	states_GlobalGameData.ghostBulletsCollisions = null;
 	states_GlobalGameData.staticLayer = null;
+	states_GlobalGameData.enemyCollisions = null;
 };
 var states_StartGame = function() {
 	com_framework_utils_State.call(this);

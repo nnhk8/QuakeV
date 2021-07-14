@@ -18,7 +18,7 @@ class Ghost extends Entity {
 	public var SPEED:Float = 80;
 	public var dying:Bool = false;
 
-	public function new(x:Float, y:Float, collisionGroup:CollisionGroup) {
+	public function new(x:Float, y:Float) {
 		super();
 		display = new Sprite("ghost");
 		display.smooth = false;
@@ -37,7 +37,7 @@ class Ghost extends Entity {
 		collision.height = 40;
 		collision.x = x;
 		collision.y = y;
-		collisionGroup.add(collision);
+		GlobalGameData.enemyCollisions.add(collision);
 		collision.userData = this;
 		facingDir = new FastVector2(1, 0);
 	}

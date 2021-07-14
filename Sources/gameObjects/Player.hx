@@ -17,7 +17,7 @@ class Player extends Entity {
 	public var collision:CollisionBox;
 	public var fly:Bool = false;
 	public var flyTime:Float = 0;
-	public var flyTimeMax:Float = 20;
+	public var flyTimeMax:Float = 10;
 
 
 	public var bulletsCollision:CollisionGroup;
