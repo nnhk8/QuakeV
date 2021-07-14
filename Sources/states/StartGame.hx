@@ -36,15 +36,15 @@ class StartGame extends State {
         
 		var title=new Text("Kenney_Thick");
         title.smooth=false;
-        title.x = Screen.getWidth()*0.2;
+        title.x = Screen.getWidth()*0.28;
         title.y = Screen.getHeight()*0.8;
-        title.text="Press the spcacebar to start crazy bubbles";
+        title.text="Press the spcacebar to start";
         title.set_color(Color.Black);
         var subTitle=new Text("Kenney_Thick");
         subTitle.smooth=false;
-        subTitle.x = Screen.getWidth()*0.28;
+        subTitle.x = Screen.getWidth()*0.38;
         subTitle.y = Screen.getHeight()*0.9;
-        subTitle.text="Be carefull they are crazy AF";
+        subTitle.text="Be carefull";
 		subTitle.set_color(Color.Black);
         stage.addChild(subTitle);
 		stage.addChild(title);

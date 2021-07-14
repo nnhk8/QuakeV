@@ -214,7 +214,7 @@ class GameState extends State {
 		if (CollisionEngine.overlap(player.collision, winZone)) {
 			room++;
 			if (room == 4) {
-				changeState(new EndGame(8, room, true));
+				changeState(new EndGame(room, true));
 			} else {
 				changeState(new GameState(room));
 			}
@@ -234,7 +234,7 @@ class GameState extends State {
 	function playerVsGhost(playerC:ICollider, ghostC:ICollider) {
 		GlobalGameData.playerLifes--;
 		if (GlobalGameData.playerLifes < 1) {
-			changeState(new EndGame(8, room));
+			changeState(new EndGame(room));
 		} else {
 			var enemey:Ghost = ghostC.userData;
 			enemey.damage();
@@ -246,7 +246,7 @@ class GameState extends State {
 		if (saw.damage){
 			GlobalGameData.playerLifes--;
 			if (GlobalGameData.playerLifes < 1) {
-				changeState(new EndGame(8, room));
+				changeState(new EndGame(room));
 			} else {
 				saw.noDamage();
 			}
@@ -263,7 +263,7 @@ class GameState extends State {
 	}
 
 	function playerVsDeathZone(playerC:ICollider, spawnZoneC:ICollider) {
-		changeState(new EndGame(8, room));
+		changeState(new EndGame(room));
 	}
 
 	function playerVsFlyPowerUp(playerC:ICollider, flyPowerUpC:ICollider) {

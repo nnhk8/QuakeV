@@ -16,13 +16,10 @@ import com.loading.Resources;
 import com.framework.utils.State;
 
 class EndGame extends State {
-
-    var score:Int;
     var level:Int;
     var win:Bool;
-    public function new(score:Int, level:Int, win:Bool = false){
+    public function new(level:Int, win:Bool = false){
         this.level=level;
-        this.score = score;
         this.win = win;
         super();
     }
@@ -40,15 +37,15 @@ class EndGame extends State {
             this.stageColor(50,0,0);
             var image=new Sprite("game_over");
             image.smooth=false;
-            image.x=  Screen.getWidth()*0.33;
-            image.y=Screen.getHeight()*0.1;
+            image.x= Screen.getWidth()*0.35;
+            image.y= Screen.getHeight()*0.1;
             stage.addChild(image);
     
         }else{
-            this.stageColor(0,50,0);
+            this.stageColor(47,242,190);
             var image=new Sprite("win");
             image.smooth=false;
-            image.x=  Screen.getWidth()*0.30;
+            image.x=  Screen.getWidth()*0.35;
             image.y=Screen.getHeight()*0.1;
             stage.addChild(image);    
             SoundManager.playMusic("WinSong");
@@ -59,14 +56,14 @@ class EndGame extends State {
         var scoreText=new Text("Kenney_Thick");
         scoreText.smooth=false;
         scoreText.x = Screen.getWidth()*0.38;
-        scoreText.y = Screen.getHeight()*0.6;
-        scoreText.text="Final Score "+score;
+        scoreText.y = Screen.getHeight()*0.7;
+        scoreText.text="Final Score "+level;
         scoreText.set_color(Color.Black);
 
         var title=new Text("Kenney_Thick");
         title.smooth=false;
         title.x = Screen.getWidth()*0.32;
-        title.y = Screen.getHeight()*0.7;
+        title.y = Screen.getHeight()*0.75;
         title.text="Spcacebar - Play again";
         title.set_color(Color.Black);
         var subTitle=new Text("Kenney_Thick");
@@ -83,10 +80,10 @@ class EndGame extends State {
     }
     override function update(dt:Float) {
         super.update(dt);
+        if(level==4){
+            level--;
+        }
         if(Input.i.isKeyCodePressed(KeyCode.Space)){
-            if(level==4){
-                level--;
-            }
            this.changeState(new GameState(this.level));
         }
         if(Input.i.isKeyCodePressed(KeyCode.M)){

@@ -23120,8 +23120,8 @@ js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl = function(begin,end) {
 };
 var kha__$Assets_ImageList = function() {
 	this.names = ["chain","explosion","flying","game_over","ghost","ghostBullet","hero","quake","tiles2","win"];
-	this.winSize = 205853;
-	this.winDescription = { name : "win", original_height : 457, file_sizes : [205853], original_width : 525, files : ["win.png"], type : "image"};
+	this.winSize = 77023;
+	this.winDescription = { name : "win", original_height : 300, file_sizes : [77023], original_width : 300, files : ["win.png"], type : "image"};
 	this.winName = "win";
 	this.win = null;
 	this.tiles2Size = 146741;
@@ -53463,12 +53463,11 @@ paths_PathWalker.prototype = {
 	,__class__: paths_PathWalker
 	,__properties__: {get_y:"get_y",get_x:"get_x"}
 };
-var states_EndGame = function(score,level,win) {
+var states_EndGame = function(level,win) {
 	if(win == null) {
 		win = false;
 	}
 	this.level = level;
-	this.score = score;
 	this.win = win;
 	com_framework_utils_State.call(this);
 };
@@ -53476,8 +53475,7 @@ $hxClasses["states.EndGame"] = states_EndGame;
 states_EndGame.__name__ = "states.EndGame";
 states_EndGame.__super__ = com_framework_utils_State;
 states_EndGame.prototype = $extend(com_framework_utils_State.prototype,{
-	score: null
-	,level: null
+	level: null
 	,win: null
 	,load: function(resources) {
 		var atlas = new com_loading_basicResources_JoinAtlas(1000,1000);
@@ -53492,14 +53490,14 @@ states_EndGame.prototype = $extend(com_framework_utils_State.prototype,{
 			this.stageColor(50,0,0);
 			var image = new com_gEngine_display_Sprite("game_over");
 			image.set_smooth(false);
-			image.x = kha_System.windowWidth() * 0.33;
+			image.x = kha_System.windowWidth() * 0.35;
 			image.y = kha_System.windowHeight() * 0.1;
 			this.stage.addChild(image);
 		} else {
-			this.stageColor(0,50,0);
+			this.stageColor(47,242,190);
 			var image = new com_gEngine_display_Sprite("win");
 			image.set_smooth(false);
-			image.x = kha_System.windowWidth() * 0.30;
+			image.x = kha_System.windowWidth() * 0.35;
 			image.y = kha_System.windowHeight() * 0.1;
 			this.stage.addChild(image);
 			com_soundLib_SoundManager.playMusic("WinSong");
@@ -53507,13 +53505,13 @@ states_EndGame.prototype = $extend(com_framework_utils_State.prototype,{
 		var scoreText = new com_gEngine_display_Text("Kenney_Thick");
 		scoreText.set_smooth(false);
 		scoreText.x = kha_System.windowWidth() * 0.38;
-		scoreText.y = kha_System.windowHeight() * 0.6;
-		scoreText.set_text("Final Score " + this.score);
+		scoreText.y = kha_System.windowHeight() * 0.7;
+		scoreText.set_text("Final Score " + this.level);
 		scoreText.set_color(-16777216);
 		var title = new com_gEngine_display_Text("Kenney_Thick");
 		title.set_smooth(false);
 		title.x = kha_System.windowWidth() * 0.32;
-		title.y = kha_System.windowHeight() * 0.7;
+		title.y = kha_System.windowHeight() * 0.75;
 		title.set_text("Spcacebar - Play again");
 		title.set_color(-16777216);
 		var subTitle = new com_gEngine_display_Text("Kenney_Thick");
@@ -53528,10 +53526,10 @@ states_EndGame.prototype = $extend(com_framework_utils_State.prototype,{
 	}
 	,update: function(dt) {
 		com_framework_utils_State.prototype.update.call(this,dt);
+		if(this.level == 4) {
+			this.level--;
+		}
 		if(com_framework_utils_Input.i.isKeyCodePressed(32)) {
-			if(this.level == 4) {
-				this.level--;
-			}
 			this.changeState(new states_GameState(this.level));
 		}
 		if(com_framework_utils_Input.i.isKeyCodePressed(77)) {
@@ -53626,9 +53624,9 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		var tmp = kha_System.windowWidth();
 		this.flyPowerUpText.x = tmp * 0.01;
 		var tmp = kha_System.windowHeight();
-		this.flyPowerUpText.y = tmp * 0.95;
+		this.flyPowerUpText.y = tmp * 0.94;
 		this.flyPowerUpText.set_text("Fly PowerUp ");
-		this.flyPowerUpText.set_color(-8388480);
+		this.flyPowerUpText.set_color(-16711936);
 		this.staticLayer.addChild(this.flyPowerUpText);
 		this.ghostBulletPowerUpText = new com_gEngine_display_Text("Kenney_Thick");
 		this.ghostBulletPowerUpText.set_smooth(false);
@@ -53690,7 +53688,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		if(com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.winZone)) {
 			this.room++;
 			if(this.room == 4) {
-				this.changeState(new states_EndGame(8,this.room,true));
+				this.changeState(new states_EndGame(this.room,true));
 			} else {
 				this.changeState(new states_GameState(this.room));
 			}
@@ -53707,7 +53705,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	,playerVsGhost: function(playerC,ghostC) {
 		states_GlobalGameData.playerLifes--;
 		if(states_GlobalGameData.playerLifes < 1) {
-			this.changeState(new states_EndGame(8,this.room));
+			this.changeState(new states_EndGame(this.room));
 		} else {
 			var enemey = ghostC.userData;
 			enemey.damage();
@@ -53718,7 +53716,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		if(saw.damage) {
 			states_GlobalGameData.playerLifes--;
 			if(states_GlobalGameData.playerLifes < 1) {
-				this.changeState(new states_EndGame(8,this.room));
+				this.changeState(new states_EndGame(this.room));
 			} else {
 				saw.noDamage();
 			}
@@ -53736,7 +53734,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		zone.destroy();
 	}
 	,playerVsDeathZone: function(playerC,spawnZoneC) {
-		this.changeState(new states_EndGame(8,this.room));
+		this.changeState(new states_EndGame(this.room));
 	}
 	,playerVsFlyPowerUp: function(playerC,flyPowerUpC) {
 		this.player.activateFly();
@@ -53874,15 +53872,15 @@ states_StartGame.prototype = $extend(com_framework_utils_State.prototype,{
 		this.stage.addChild(image);
 		var title = new com_gEngine_display_Text("Kenney_Thick");
 		title.set_smooth(false);
-		title.x = kha_System.windowWidth() * 0.2;
+		title.x = kha_System.windowWidth() * 0.28;
 		title.y = kha_System.windowHeight() * 0.8;
-		title.set_text("Press the spcacebar to start crazy bubbles");
+		title.set_text("Press the spcacebar to start");
 		title.set_color(-16777216);
 		var subTitle = new com_gEngine_display_Text("Kenney_Thick");
 		subTitle.set_smooth(false);
-		subTitle.x = kha_System.windowWidth() * 0.28;
+		subTitle.x = kha_System.windowWidth() * 0.38;
 		subTitle.y = kha_System.windowHeight() * 0.9;
-		subTitle.set_text("Be carefull they are crazy AF");
+		subTitle.set_text("Be carefull");
 		subTitle.set_color(-16777216);
 		this.stage.addChild(subTitle);
 		this.stage.addChild(title);
