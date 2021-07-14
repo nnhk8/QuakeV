@@ -103,9 +103,9 @@ var Main = function() { };
 $hxClasses["Main"] = Main;
 Main.__name__ = "Main";
 Main.main = function() {
-	var windowsOptions = new kha_WindowOptions("clase3",0,0,1280,720,null,true,1,0);
+	var windowsOptions = new kha_WindowOptions("QuakeV",0,0,1280,720,null,true,1,0);
 	var frameBufferOptions = new kha_FramebufferOptions(60,true,32,16,8,0);
-	kha_System.start(new kha_SystemOptions("clase3",1280,720,windowsOptions,frameBufferOptions),function(w) {
+	kha_System.start(new kha_SystemOptions("QuakeV",1280,720,windowsOptions,frameBufferOptions),function(w) {
 		new com_framework_Simulation(states_StartGame,1280,720,1,0);
 	});
 };
@@ -677,7 +677,6 @@ com_collision_platformer_ICollider.prototype = {
 	,userData: null
 	,parent: null
 	,removeFromParent: null
-	,debugDraw: null
 	,__class__: com_collision_platformer_ICollider
 };
 var com_collision_platformer_CollisionBox = function() {
@@ -852,13 +851,6 @@ com_collision_platformer_CollisionBox.prototype = $extend(com_collision_platform
 			return false;
 		}
 	}
-	,debugDraw: function(canvas) {
-		var g2 = canvas.get_g2();
-		g2.drawLine(this.x,this.y,this.x + this.width,this.y);
-		g2.drawLine(this.x + this.width,this.y,this.x + this.width,this.y + this.height);
-		g2.drawLine(this.x + this.width,this.y + this.height,this.x,this.y + this.height);
-		g2.drawLine(this.x,this.y + this.height,this.x,this.y);
-	}
 	,__class__: com_collision_platformer_CollisionBox
 	,__properties__: {get_middleY:"get_middleY",get_middleX:"get_middleX"}
 });
@@ -866,61 +858,10 @@ var com_collision_platformer_CollisionEngine = function() {
 };
 $hxClasses["com.collision.platformer.CollisionEngine"] = com_collision_platformer_CollisionEngine;
 com_collision_platformer_CollisionEngine.__name__ = "com.collision.platformer.CollisionEngine";
-com_collision_platformer_CollisionEngine.renderDebug = function(canvas,camera) {
-	canvas.get_g2().begin(false);
-	canvas.get_g2().set_color(-256);
-	var cV = camera.view;
-	var scaleX = canvas.get_width() / camera.width;
-	var scaleY = canvas.get_height() / camera.height;
-	var _this = canvas.get_g2();
-	var _this__00 = scaleX;
-	var _this__10 = 0;
-	var _this__20 = 0;
-	var _this__01 = 0;
-	var _this__11 = scaleY;
-	var _this__21 = 0;
-	var _this__02 = 0;
-	var _this__12 = 0;
-	var _this__22 = 1;
-	var m__00 = cV._00;
-	var m__10 = cV._10;
-	var m__20 = cV._30 + camera.width * 0.5;
-	var m__01 = cV._01;
-	var m__11 = cV._11;
-	var m__21 = cV._31 + camera.height * 0.5;
-	var m__02 = cV._03;
-	var m__12 = cV._13;
-	var m__22 = cV._33;
-	var transformation = new kha_math_FastMatrix3(_this__00 * m__00 + _this__10 * m__01 + _this__20 * m__02,_this__00 * m__10 + _this__10 * m__11 + _this__20 * m__12,_this__00 * m__20 + _this__10 * m__21 + _this__20 * m__22,_this__01 * m__00 + _this__11 * m__01 + _this__21 * m__02,_this__01 * m__10 + _this__11 * m__11 + _this__21 * m__12,_this__01 * m__20 + _this__11 * m__21 + _this__21 * m__22,_this__02 * m__00 + _this__12 * m__01 + _this__22 * m__02,_this__02 * m__10 + _this__12 * m__11 + _this__22 * m__12,_this__02 * m__20 + _this__12 * m__21 + _this__22 * m__22);
-	_this.setTransformation(transformation);
-	var _this1 = _this.transformations[_this.transformationIndex];
-	_this1._00 = transformation._00;
-	_this1._10 = transformation._10;
-	_this1._20 = transformation._20;
-	_this1._01 = transformation._01;
-	_this1._11 = transformation._11;
-	_this1._21 = transformation._21;
-	_this1._02 = transformation._02;
-	_this1._12 = transformation._12;
-	_this1._22 = transformation._22;
-	var _g = 0;
-	var _g1 = com_collision_platformer_CollisionEngine.colliders;
-	while(_g < _g1.length) {
-		var collider = _g1[_g];
-		++_g;
-		collider.debugDraw(canvas);
-	}
-	canvas.get_g2().end();
-	com_collision_platformer_CollisionEngine.colliders.splice(0,com_collision_platformer_CollisionEngine.colliders.length);
-};
 com_collision_platformer_CollisionEngine.collide = function(A,B,aCallBack) {
-	com_collision_platformer_CollisionEngine.colliders.push(A);
-	com_collision_platformer_CollisionEngine.colliders.push(B);
 	return A.collide(B,aCallBack);
 };
 com_collision_platformer_CollisionEngine.bulletCollide = function(A,B,iterations,aCallBack) {
-	com_collision_platformer_CollisionEngine.colliders.push(A);
-	com_collision_platformer_CollisionEngine.colliders.push(B);
 	var returnValue = false;
 	var AendX = A.x;
 	var AendY = A.y;
@@ -946,8 +887,6 @@ com_collision_platformer_CollisionEngine.bulletCollide = function(A,B,iterations
 	return returnValue;
 };
 com_collision_platformer_CollisionEngine.overlap = function(A,B,aCallBack) {
-	com_collision_platformer_CollisionEngine.colliders.push(A);
-	com_collision_platformer_CollisionEngine.colliders.push(B);
 	return A.overlap(B,aCallBack);
 };
 com_collision_platformer_CollisionEngine.prototype = {
@@ -1080,15 +1019,6 @@ com_collision_platformer_CollisionGroup.prototype = {
 	}
 	,collisionType: function() {
 		return 2;
-	}
-	,debugDraw: function(canvas) {
-		var _g = 0;
-		var _g1 = this.colliders;
-		while(_g < _g1.length) {
-			var col = _g1[_g];
-			++_g;
-			col.debugDraw(canvas);
-		}
 	}
 	,__class__: com_collision_platformer_CollisionGroup
 };
@@ -1302,8 +1232,6 @@ com_collision_platformer_CollisionTileMap.prototype = {
 			}
 		}
 		return -1;
-	}
-	,debugDraw: function(canvas) {
 	}
 	,__class__: com_collision_platformer_CollisionTileMap
 };
@@ -53868,11 +53796,6 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		var gamepad = com_framework_utils_Input.i.getGamepad(0);
 		gamepad.notify(($_=this.player,$bind($_,$_.onAxisChange)),($_=this.player,$bind($_,$_.onButtonChange)));
 	}
-	,draw: function(framebuffer) {
-		com_framework_utils_State.prototype.draw.call(this,framebuffer);
-		var camera = this.stage.cameras[0];
-		com_collision_platformer_CollisionEngine.renderDebug(framebuffer,camera);
-	}
 	,destroy: function() {
 		com_framework_utils_State.prototype.destroy.call(this);
 		states_GlobalGameData.destroy();
@@ -54078,7 +54001,6 @@ Xml.ProcessingInstruction = 5;
 Xml.Document = 6;
 com_TimeManager.time = 0;
 com_TimeManager.multiplier = 1;
-com_collision_platformer_CollisionEngine.colliders = [];
 com_collision_platformer_Sides.NONE = 0;
 com_collision_platformer_Sides.LEFT = 1;
 com_collision_platformer_Sides.RIGHT = 2;
@@ -54457,7 +54379,7 @@ kha_netsync_SyncBuilder.nextId = 0;
 kha_netsync_SyncBuilder.objects = [];
 states_GlobalGameData.ghostBullets = false;
 states_GlobalGameData.ghostBulletsTime = 0;
-states_GlobalGameData.ghostBulletsTimeMax = 20;
+states_GlobalGameData.ghostBulletsTimeMax = 15;
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
 

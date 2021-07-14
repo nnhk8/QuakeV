@@ -9,7 +9,6 @@
 -cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\Format
 -D hxcpp_smart_strings
 -D debugInfo
--D DEBUGDRAW
 -D hxGeomAlgo
 -D Format
 -D tiled

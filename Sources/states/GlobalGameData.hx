@@ -19,7 +19,7 @@ class GlobalGameData {
 
 	public static var ghostBullets:Bool = false;
 	public static var ghostBulletsTime:Float = 0;
-	public static var ghostBulletsTimeMax:Float = 20;
+	public static var ghostBulletsTimeMax:Float = 15;
 
 
 
