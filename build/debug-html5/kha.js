@@ -106,7 +106,7 @@ Main.main = function() {
 	var windowsOptions = new kha_WindowOptions("clase3",0,0,1280,720,null,true,1,0);
 	var frameBufferOptions = new kha_FramebufferOptions(60,true,32,16,8,0);
 	kha_System.start(new kha_SystemOptions("clase3",1280,720,windowsOptions,frameBufferOptions),function(w) {
-		new com_framework_Simulation(states_GameState,1280,720,1,0);
+		new com_framework_Simulation(states_StartGame,1280,720,1,0);
 	});
 };
 Math.__name__ = "Math";
@@ -17079,6 +17079,46 @@ com_loading_basicResources_JoinAtlas.prototype = {
 	}
 	,__class__: com_loading_basicResources_JoinAtlas
 };
+var com_loading_basicResources_SoundLoader = function(soundName,uncompress) {
+	if(uncompress == null) {
+		uncompress = true;
+	}
+	this.uncompress = true;
+	this.name = soundName;
+	this.uncompress = uncompress;
+};
+$hxClasses["com.loading.basicResources.SoundLoader"] = com_loading_basicResources_SoundLoader;
+com_loading_basicResources_SoundLoader.__name__ = "com.loading.basicResources.SoundLoader";
+com_loading_basicResources_SoundLoader.__interfaces__ = [com_loading_Resource];
+com_loading_basicResources_SoundLoader.prototype = {
+	name: null
+	,onLoad: null
+	,uncompress: null
+	,load: function(callback) {
+		this.onLoad = callback;
+		kha_Assets.loadSound(this.name,$bind(this,this.onSoundLoad),null,{ fileName : "com/loading/basicResources/SoundLoader.hx", lineNumber : 20, className : "com.loading.basicResources.SoundLoader", methodName : "load"});
+	}
+	,loadLocal: function(callback) {
+		this.onLoad = callback;
+		this.onSoundLoad(Reflect.field(kha_Assets.sounds,this.name));
+	}
+	,onSoundLoad: function(sound) {
+		com_soundLib_SoundManager.addSound(this.name,sound);
+		if(this.uncompress && sound.compressedData != null) {
+			sound.uncompress(this.onLoad);
+		} else {
+			this.onLoad();
+		}
+		this.onLoad = null;
+	}
+	,unload: function() {
+		kha_Assets.sounds.get(this.name).unload();
+		kha_Assets.sounds[this.name] = null;
+	}
+	,unloadLocal: function() {
+	}
+	,__class__: com_loading_basicResources_SoundLoader
+};
 var com_loading_basicResources_SparrowLoader = function(imageName,dataName) {
 	com_loading_basicResources_TilesheetLoader.call(this,imageName,0,0,0);
 	this.dataName = dataName;
@@ -23059,11 +23099,15 @@ js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl = function(begin,end) {
 	return resultArray.buffer;
 };
 var kha__$Assets_ImageList = function() {
-	this.names = ["chain","explosion","flying","game_over","ghost","ghostBullet","hero","tiles2"];
-	this.tiles2Size = 29965;
-	this.tiles2Description = { name : "tiles2", original_height : 416, file_sizes : [29965], original_width : 128, files : ["tiles2.png"], type : "image"};
+	this.names = ["chain","explosion","flying","game_over","ghost","ghostBullet","hero","quake","tiles2"];
+	this.tiles2Size = 30323;
+	this.tiles2Description = { name : "tiles2", original_height : 416, file_sizes : [30323], original_width : 128, files : ["tiles2.png"], type : "image"};
 	this.tiles2Name = "tiles2";
 	this.tiles2 = null;
+	this.quakeSize = 23189;
+	this.quakeDescription = { name : "quake", original_height : 518, file_sizes : [23189], original_width : 518, files : ["quake.png"], type : "image"};
+	this.quakeName = "quake";
+	this.quake = null;
 	this.heroSize = 16820;
 	this.heroDescription = { name : "hero", original_height : 180, file_sizes : [16820], original_width : 225, files : ["hero.png"], type : "image"};
 	this.heroName = "hero";
@@ -23190,6 +23234,19 @@ kha__$Assets_ImageList.prototype = {
 		this.hero.unload();
 		this.hero = null;
 	}
+	,quake: null
+	,quakeName: null
+	,quakeDescription: null
+	,quakeSize: null
+	,quakeLoad: function(done,failure) {
+		kha_Assets.loadImage("quake",function(image) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 136, className : "kha._Assets.ImageList", methodName : "quakeLoad"});
+	}
+	,quakeUnload: function() {
+		this.quake.unload();
+		this.quake = null;
+	}
 	,tiles2: null
 	,tiles2Name: null
 	,tiles2Description: null
@@ -23207,7 +23264,23 @@ kha__$Assets_ImageList.prototype = {
 	,__class__: kha__$Assets_ImageList
 };
 var kha__$Assets_SoundList = function() {
-	this.names = [];
+	this.names = ["WinSong","sound1","sound2","sound3"];
+	this.sound3Size = 3170703;
+	this.sound3Description = { name : "sound3", file_sizes : [3170703], files : ["sound3.ogg"], type : "sound"};
+	this.sound3Name = "sound3";
+	this.sound3 = null;
+	this.sound2Size = 2248264;
+	this.sound2Description = { name : "sound2", file_sizes : [2248264], files : ["sound2.ogg"], type : "sound"};
+	this.sound2Name = "sound2";
+	this.sound2 = null;
+	this.sound1Size = 2256307;
+	this.sound1Description = { name : "sound1", file_sizes : [2256307], files : ["sound1.ogg"], type : "sound"};
+	this.sound1Name = "sound1";
+	this.sound1 = null;
+	this.WinSongSize = 115444;
+	this.WinSongDescription = { name : "WinSong", file_sizes : [115444], files : ["WinSong.ogg"], type : "sound"};
+	this.WinSongName = "WinSong";
+	this.WinSong = null;
 };
 $hxClasses["kha._Assets.SoundList"] = kha__$Assets_SoundList;
 kha__$Assets_SoundList.__name__ = "kha._Assets.SoundList";
@@ -23215,21 +23288,73 @@ kha__$Assets_SoundList.prototype = {
 	get: function(name) {
 		return Reflect.field(this,name);
 	}
+	,WinSong: null
+	,WinSongName: null
+	,WinSongDescription: null
+	,WinSongSize: null
+	,WinSongLoad: function(done,failure) {
+		kha_Assets.loadSound("WinSong",function(sound) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 140, className : "kha._Assets.SoundList", methodName : "WinSongLoad"});
+	}
+	,WinSongUnload: function() {
+		this.WinSong.unload();
+		this.WinSong = null;
+	}
+	,sound1: null
+	,sound1Name: null
+	,sound1Description: null
+	,sound1Size: null
+	,sound1Load: function(done,failure) {
+		kha_Assets.loadSound("sound1",function(sound) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 140, className : "kha._Assets.SoundList", methodName : "sound1Load"});
+	}
+	,sound1Unload: function() {
+		this.sound1.unload();
+		this.sound1 = null;
+	}
+	,sound2: null
+	,sound2Name: null
+	,sound2Description: null
+	,sound2Size: null
+	,sound2Load: function(done,failure) {
+		kha_Assets.loadSound("sound2",function(sound) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 140, className : "kha._Assets.SoundList", methodName : "sound2Load"});
+	}
+	,sound2Unload: function() {
+		this.sound2.unload();
+		this.sound2 = null;
+	}
+	,sound3: null
+	,sound3Name: null
+	,sound3Description: null
+	,sound3Size: null
+	,sound3Load: function(done,failure) {
+		kha_Assets.loadSound("sound3",function(sound) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 140, className : "kha._Assets.SoundList", methodName : "sound3Load"});
+	}
+	,sound3Unload: function() {
+		this.sound3.unload();
+		this.sound3 = null;
+	}
 	,names: null
 	,__class__: kha__$Assets_SoundList
 };
 var kha__$Assets_BlobList = function() {
 	this.names = ["lvl1_tmx","lvl2_tmx","lvl3_tmx"];
-	this.lvl3_tmxSize = 7314;
-	this.lvl3_tmxDescription = { name : "lvl3_tmx", file_sizes : [7314], files : ["lvl3.tmx"], type : "blob"};
+	this.lvl3_tmxSize = 12413;
+	this.lvl3_tmxDescription = { name : "lvl3_tmx", file_sizes : [12413], files : ["lvl3.tmx"], type : "blob"};
 	this.lvl3_tmxName = "lvl3_tmx";
 	this.lvl3_tmx = null;
-	this.lvl2_tmxSize = 7089;
-	this.lvl2_tmxDescription = { name : "lvl2_tmx", file_sizes : [7089], files : ["lvl2.tmx"], type : "blob"};
+	this.lvl2_tmxSize = 12416;
+	this.lvl2_tmxDescription = { name : "lvl2_tmx", file_sizes : [12416], files : ["lvl2.tmx"], type : "blob"};
 	this.lvl2_tmxName = "lvl2_tmx";
 	this.lvl2_tmx = null;
-	this.lvl1_tmxSize = 12412;
-	this.lvl1_tmxDescription = { name : "lvl1_tmx", file_sizes : [12412], files : ["lvl1.tmx"], type : "blob"};
+	this.lvl1_tmxSize = 12416;
+	this.lvl1_tmxDescription = { name : "lvl1_tmx", file_sizes : [12416], files : ["lvl1.tmx"], type : "blob"};
 	this.lvl1_tmxName = "lvl1_tmx";
 	this.lvl1_tmx = null;
 };
@@ -53301,7 +53426,8 @@ paths_PathWalker.prototype = {
 	,__class__: paths_PathWalker
 	,__properties__: {get_y:"get_y",get_x:"get_x"}
 };
-var states_EndGame = function(score) {
+var states_EndGame = function(score,level) {
+	this.level = level;
 	this.score = score;
 	com_framework_utils_State.call(this);
 };
@@ -53310,6 +53436,7 @@ states_EndGame.__name__ = "states.EndGame";
 states_EndGame.__super__ = com_framework_utils_State;
 states_EndGame.prototype = $extend(com_framework_utils_State.prototype,{
 	score: null
+	,level: null
 	,load: function(resources) {
 		var atlas = new com_loading_basicResources_JoinAtlas(500,500);
 		atlas.add(new com_loading_basicResources_FontLoader("Kenney_Thick",20));
@@ -53348,7 +53475,10 @@ states_EndGame.prototype = $extend(com_framework_utils_State.prototype,{
 	,update: function(dt) {
 		com_framework_utils_State.prototype.update.call(this,dt);
 		if(com_framework_utils_Input.i.isKeyCodePressed(32)) {
-			this.changeState(new states_GameState(1));
+			this.changeState(new states_GameState(this.level));
+		}
+		if(com_framework_utils_Input.i.isKeyCodePressed(77)) {
+			this.changeState(new states_StartGame());
 		}
 	}
 	,__class__: states_EndGame
@@ -53360,11 +53490,8 @@ var states_GameState = function(room) {
 	this.enemyCollision = new com_collision_platformer_CollisionGroup();
 	this.deathZones = new com_collision_platformer_CollisionGroup();
 	this.spawnZones = new com_collision_platformer_CollisionGroup();
-	com_framework_utils_State.call(this);
-	if(room == null || room > 3) {
-		room = 1;
-	}
 	this.room = room;
+	com_framework_utils_State.call(this);
 };
 $hxClasses["states.GameState"] = states_GameState;
 states_GameState.__name__ = "states.GameState";
@@ -53375,10 +53502,10 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	,simulationLayer: null
 	,staticLayer: null
 	,touchJoystick: null
-	,room: null
 	,winZone: null
 	,spawnZones: null
 	,deathZones: null
+	,room: null
 	,enemyCollision: null
 	,sawCollisions: null
 	,flyPowerUpCollisions: null
@@ -53395,6 +53522,10 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		atlas.add(new com_loading_basicResources_SpriteSheetLoader("chain",38,38,0,[new com_loading_basicResources_Sequence("spin",[0,1,2,3,4,5,6,7])]));
 		atlas.add(new com_loading_basicResources_FontLoader("Kenney_Thick",20));
 		resources.add(atlas);
+		resources.add(new com_loading_basicResources_SoundLoader("sound1",false));
+		resources.add(new com_loading_basicResources_SoundLoader("sound2",false));
+		resources.add(new com_loading_basicResources_SoundLoader("sound3",false));
+		resources.add(new com_loading_basicResources_SoundLoader("WinSong",false));
 	}
 	,init: function() {
 		this.stageColor(0.5,.5,0.5);
@@ -53464,7 +53595,12 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		this.stage.cameras[0].setTarget(this.player.collision.x,this.player.collision.y);
 		com_collision_platformer_CollisionEngine.collide(this.player.collision,this.worldMap.collision);
 		if(com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.winZone)) {
-			this.changeState(new states_GameState(++this.room));
+			if(this.room < 3) {
+				this.room++;
+			} else {
+				this.room = 1;
+			}
+			this.changeState(new states_GameState(this.room));
 		}
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.spawnZones,$bind(this,this.playerVsSpawnZone));
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.deathZones,$bind(this,this.playerVsDeathZone));
@@ -53476,10 +53612,10 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.ghostBulletsCollisions,$bind(this,this.playerVsGhostBulletPowerUp));
 	}
 	,playerVsGhost: function(playerC,ghostC) {
-		this.changeState(new states_EndGame(8));
+		this.changeState(new states_EndGame(8,this.room));
 	}
 	,playerVsSaw: function(playerC,sawC) {
-		this.changeState(new states_EndGame(8));
+		this.changeState(new states_EndGame(8,this.room));
 	}
 	,playerVsSpawnZone: function(playerC,spawnZoneC) {
 		var spawnPositions = gameObjects_LevelPositions.getSpawnPoints();
@@ -53493,7 +53629,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		zone.destroy();
 	}
 	,playerVsDeathZone: function(playerC,spawnZoneC) {
-		this.changeState(new states_EndGame(8));
+		this.changeState(new states_EndGame(8,this.room));
 	}
 	,playerVsFlyPowerUp: function(playerC,flyPowerUpC) {
 		this.player.activateFly();
@@ -53539,7 +53675,11 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		states_GlobalGameData.destroy();
 	}
 	,buildLevel: function() {
-		if(this.room == 1) {
+		switch(this.room) {
+		case 1:
+			com_soundLib_SoundManager.playMusic("sound2");
+			break;
+		case 2:
 			var a = new kha_math_FastVector2(1230,332);
 			var b = new kha_math_FastVector2(1555,332);
 			var c = new kha_math_FastVector2(1555,500);
@@ -53548,6 +53688,11 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 			this.addChild(saw1);
 			var saw2 = new gameObjects_Saw(gameObjects_LevelPositions.getRectangularPath(c,d,a,b));
 			this.addChild(saw2);
+			com_soundLib_SoundManager.playMusic("sound1");
+			break;
+		case 3:
+			com_soundLib_SoundManager.playMusic("sound3");
+			break;
 		}
 	}
 	,__class__: states_GameState
@@ -53564,6 +53709,49 @@ states_GlobalGameData.destroy = function() {
 	states_GlobalGameData.ghostBulletsCollisions = null;
 	states_GlobalGameData.staticLayer = null;
 };
+var states_StartGame = function() {
+	com_framework_utils_State.call(this);
+};
+$hxClasses["states.StartGame"] = states_StartGame;
+states_StartGame.__name__ = "states.StartGame";
+states_StartGame.__super__ = com_framework_utils_State;
+states_StartGame.prototype = $extend(com_framework_utils_State.prototype,{
+	load: function(resources) {
+		var atlas = new com_loading_basicResources_JoinAtlas(700,700);
+		atlas.add(new com_loading_basicResources_FontLoader("Kenney_Thick",20));
+		atlas.add(new com_loading_basicResources_ImageLoader("quake"));
+		resources.add(atlas);
+	}
+	,init: function() {
+		this.stageColor(50,0,0);
+		var image = new com_gEngine_display_Sprite("quake");
+		image.set_smooth(false);
+		image.x = kha_System.windowWidth() * 0.25;
+		image.y = kha_System.windowHeight() * 0.1;
+		this.stage.addChild(image);
+		var title = new com_gEngine_display_Text("Kenney_Thick");
+		title.set_smooth(false);
+		title.x = kha_System.windowWidth() * 0.2;
+		title.y = kha_System.windowHeight() * 0.8;
+		title.set_text("Press the spcacebar to start crazy bubbles");
+		title.set_color(-16777216);
+		var subTitle = new com_gEngine_display_Text("Kenney_Thick");
+		subTitle.set_smooth(false);
+		subTitle.x = kha_System.windowWidth() * 0.28;
+		subTitle.y = kha_System.windowHeight() * 0.9;
+		subTitle.set_text("Be carefull they are crazy AF");
+		subTitle.set_color(-16777216);
+		this.stage.addChild(subTitle);
+		this.stage.addChild(title);
+	}
+	,update: function(dt) {
+		com_framework_utils_State.prototype.update.call(this,dt);
+		if(com_framework_utils_Input.i.isKeyCodePressed(32)) {
+			this.changeState(new states_GameState(1));
+		}
+	}
+	,__class__: states_StartGame
+});
 function $getIterator(o) { if( o instanceof Array ) return new haxe_iterators_ArrayIterator(o); else return o.iterator(); }
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $global.$haxeUID++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = m.bind(o); o.hx__closures__[m.__id__] = f; } return f; }
 $global.$haxeUID |= 0;

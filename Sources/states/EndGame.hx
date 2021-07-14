@@ -16,7 +16,9 @@ import com.framework.utils.State;
 class EndGame extends State {
 
     var score:Int;
-    public function new(score:Int){
+    var level:Int;
+    public function new(score:Int, level:Int){
+        this.level=level;
         this.score = score;
         super();
     }
@@ -64,10 +66,10 @@ class EndGame extends State {
     override function update(dt:Float) {
         super.update(dt);
         if(Input.i.isKeyCodePressed(KeyCode.Space)){
-           this.changeState(new GameState(1));
+           this.changeState(new GameState(this.level));
         }
-        /*if(Input.i.isKeyCodePressed(KeyCode.M)){
+        if(Input.i.isKeyCodePressed(KeyCode.M)){
             this.changeState(new StartGame());
-         }*/
+         }
     }
 }

@@ -1,5 +1,7 @@
 package states;
 
+import com.soundLib.SoundManager;
+import com.loading.basicResources.SoundLoader;
 import kha.Color;
 import com.gEngine.helpers.Screen;
 import com.gEngine.display.Text;
@@ -44,10 +46,11 @@ class GameState extends State {
 	var simulationLayer:Layer;
 	var staticLayer:StaticLayer;
 	var touchJoystick:VirtualGamepad;
-	var room:Int;
 	var winZone:CollisionBox;
 	var spawnZones:CollisionGroup = new CollisionGroup();
 	var deathZones:CollisionGroup = new CollisionGroup();
+
+	var room:Int;
 
 	var enemyCollision:CollisionGroup = new CollisionGroup();
 	var sawCollisions:CollisionGroup = new CollisionGroup();
@@ -55,11 +58,8 @@ class GameState extends State {
 	var ghostBulletsCollisions:CollisionGroup = new CollisionGroup();
 
 	public function new(room:Int) {
-		super();
-		if (room == null || room > 3) {
-			room = 1;
-		}
 		this.room = room;
+		super();
 	}
 
 	override function load(resources:Resources) {
@@ -92,9 +92,13 @@ class GameState extends State {
 		]));
 		atlas.add(new SpriteSheetLoader("chain", 38, 38, 0, [new Sequence("spin", [0, 1, 2, 3, 4, 5, 6, 7])]));
 
-		atlas.add(new FontLoader("Kenney_Thick",20));
+		atlas.add(new FontLoader("Kenney_Thick", 20));
 
 		resources.add(atlas);
+		resources.add(new SoundLoader("sound1", false));
+		resources.add(new SoundLoader("sound2", false));
+		resources.add(new SoundLoader("sound3", false));
+		resources.add(new SoundLoader("WinSong", false));
 	}
 
 	override function init() {
@@ -115,12 +119,12 @@ class GameState extends State {
 		createTouchJoystick();
 		this.buildLevel();
 
-		var scoreText=new Text("Kenney_Thick");
-        scoreText.smooth=false;
-        scoreText.x = Screen.getWidth()*0.38;
-        scoreText.y = Screen.getHeight()*0.6;
-        scoreText.text="Final Score ";
-        scoreText.set_color(Color.Black);
+		var scoreText = new Text("Kenney_Thick");
+		scoreText.smooth = false;
+		scoreText.x = Screen.getWidth() * 0.38;
+		scoreText.y = Screen.getHeight() * 0.6;
+		scoreText.text = "Final Score ";
+		scoreText.set_color(Color.Black);
 		staticLayer.addChild(scoreText);
 	}
 
@@ -174,7 +178,12 @@ class GameState extends State {
 
 		CollisionEngine.collide(player.collision, worldMap.collision);
 		if (CollisionEngine.overlap(player.collision, winZone)) {
-			changeState(new GameState(++room));
+			if (room<3){
+				room++;
+			} else{
+				room = 1;
+			}
+			changeState(new GameState(room));
 		}
 		CollisionEngine.overlap(player.collision, spawnZones, playerVsSpawnZone);
 		CollisionEngine.overlap(player.collision, deathZones, playerVsDeathZone);
@@ -189,11 +198,11 @@ class GameState extends State {
 	}
 
 	function playerVsGhost(playerC:ICollider, ghostC:ICollider) {
-		changeState(new EndGame(8));
+		changeState(new EndGame(8,room));
 	}
 
 	function playerVsSaw(playerC:ICollider, sawC:ICollider) {
-		changeState(new EndGame(8));
+		changeState(new EndGame(8,room));
 	}
 
 	function playerVsSpawnZone(playerC:ICollider, spawnZoneC:ICollider) {
@@ -206,7 +215,7 @@ class GameState extends State {
 	}
 
 	function playerVsDeathZone(playerC:ICollider, spawnZoneC:ICollider) {
-		changeState(new EndGame(8));
+		changeState(new EndGame(8,room));
 	}
 
 	function playerVsFlyPowerUp(playerC:ICollider, flyPowerUpC:ICollider) {
@@ -214,7 +223,7 @@ class GameState extends State {
 		var fly:FlyPowerUp = cast flyPowerUpC.userData;
 		fly.destroy();
 	}
-	
+
 	function playerVsGhostBulletPowerUp(playerC:ICollider, ghostBulletPowerUpC:ICollider) {
 		GlobalGameData.ghostBullets = true;
 		var ghostBullet:GhostBulletPowerUp = cast ghostBulletPowerUpC.userData;
@@ -264,8 +273,8 @@ class GameState extends State {
 	}
 
 	private function buildLevel() {
-		switch (this.room) {
-			case 1:
+		switch (room) {
+			case 2:
 				var a = new FastVector2(1230, 332);
 				var b = new FastVector2(1555, 332);
 				var c = new FastVector2(1555, 500);
@@ -274,6 +283,11 @@ class GameState extends State {
 				addChild(saw1);
 				var saw2 = new Saw(LevelPositions.getRectangularPath(c, d, a, b));
 				addChild(saw2);
+				SoundManager.playMusic("sound1");
+			case 1:
+				SoundManager.playMusic("sound2");
+			case 3:
+				SoundManager.playMusic("sound3");
 		}
 	}
 }

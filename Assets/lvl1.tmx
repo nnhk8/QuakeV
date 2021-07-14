@@ -62,7 +62,7 @@
  </layer>
  <objectgroup id="7" name="Object Layer 1">
   <object id="5" name="playerPosition" x="104.599" y="561.712" width="70.1703" height="39.1648"/>
-  <object id="6" name="winZone" x="1827.22" y="91.962" width="81.5934" height="96.2802"/>
+  <object id="6" name="winZone" x="259.22" y="503.962" width="81.5934" height="96.2802"/>
   <object id="8" name="deathZone" x="196" y="643.333" width="155.333" height="59.6667">
    <properties>
     <property name="amount" type="int" value="4"/>

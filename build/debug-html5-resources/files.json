@@ -75,6 +75,16 @@
 			"types": []
 		},
 		{
+			"name": "WinSong",
+			"files": [
+				"WinSong.ogg"
+			],
+			"file_sizes": [
+				115444
+			],
+			"type": "sound"
+		},
+		{
 			"name": "alpha_vert",
 			"files": [
 				"alpha.vert.essl",
@@ -514,7 +524,7 @@
 				"lvl1.tmx"
 			],
 			"file_sizes": [
-				12412
+				12416
 			],
 			"type": "blob"
 		},
@@ -524,7 +534,7 @@
 				"lvl2.tmx"
 			],
 			"file_sizes": [
-				7089
+				12416
 			],
 			"type": "blob"
 		},
@@ -534,7 +544,7 @@
 				"lvl3.tmx"
 			],
 			"file_sizes": [
-				7314
+				12413
 			],
 			"type": "blob"
 		},
@@ -1396,6 +1406,18 @@
 			]
 		},
 		{
+			"name": "quake",
+			"files": [
+				"quake.png"
+			],
+			"file_sizes": [
+				23189
+			],
+			"type": "image",
+			"original_width": 518,
+			"original_height": 518
+		},
+		{
 			"name": "renderAreaTint_frag",
 			"files": [
 				"renderAreaTint.frag.essl",
@@ -2118,12 +2140,42 @@
 			]
 		},
 		{
+			"name": "sound1",
+			"files": [
+				"sound1.ogg"
+			],
+			"file_sizes": [
+				2256307
+			],
+			"type": "sound"
+		},
+		{
+			"name": "sound2",
+			"files": [
+				"sound2.ogg"
+			],
+			"file_sizes": [
+				2248264
+			],
+			"type": "sound"
+		},
+		{
+			"name": "sound3",
+			"files": [
+				"sound3.ogg"
+			],
+			"file_sizes": [
+				3170703
+			],
+			"type": "sound"
+		},
+		{
 			"name": "tiles2",
 			"files": [
 				"tiles2.png"
 			],
 			"file_sizes": [
-				29965
+				30323
 			],
 			"type": "image",
 			"original_width": 128,

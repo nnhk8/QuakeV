@@ -21,6 +21,7 @@ class GlobalGameData {
 	public static var ghostBulletsTime:Float = 0;
 	public static var ghostBulletsTimeMax:Float = 20;
 
+
 	static public function destroy() {
 		simulationLayer = null;
 		player = null;
