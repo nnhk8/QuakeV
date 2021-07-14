@@ -30,6 +30,7 @@ class EndGame extends State {
         atlas.add(new ImageLoader("win"));
         resources.add(atlas);
         resources.add(new SoundLoader("WinSong", false));
+        resources.add(new SoundLoader("endGame", false));
     }
 
     override function init() {
@@ -39,8 +40,8 @@ class EndGame extends State {
             image.smooth=false;
             image.x= Screen.getWidth()*0.35;
             image.y= Screen.getHeight()*0.1;
-            stage.addChild(image);
-    
+            stage.addChild(image);    
+            SoundManager.playMusic("endGame",false);
         }else{
             this.stageColor(47,242,190);
             var image=new Sprite("win");

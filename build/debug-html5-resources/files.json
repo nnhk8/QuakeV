@@ -18,7 +18,7 @@
 			],
 			"outputs": [
 				{
-					"name": "color",
+					"name": "FragColor",
 					"type": "vec4"
 				}
 			],
@@ -26,6 +26,22 @@
 				{
 					"name": "tex",
 					"type": "sampler2D"
+				},
+				{
+					"name": "brightIndex",
+					"type": "vec3"
+				},
+				{
+					"name": "tolerance",
+					"type": "float"
+				},
+				{
+					"name": "darkColor",
+					"type": "vec3"
+				},
+				{
+					"name": "tintColor",
+					"type": "vec3"
 				}
 			],
 			"types": []
@@ -253,6 +269,16 @@
 			"original_height": 38
 		},
 		{
+			"name": "endGame",
+			"files": [
+				"endGame.ogg"
+			],
+			"file_sizes": [
+				104468
+			],
+			"type": "sound"
+		},
+		{
 			"name": "explosion",
 			"files": [
 				"explosion.png"
@@ -263,6 +289,16 @@
 			"type": "image",
 			"original_width": 260,
 			"original_height": 256
+		},
+		{
+			"name": "explosion",
+			"files": [
+				"explosion.ogg"
+			],
+			"file_sizes": [
+				14143
+			],
+			"type": "sound"
 		},
 		{
 			"name": "filmGrain_frag",
@@ -403,6 +439,16 @@
 			"original_height": 60
 		},
 		{
+			"name": "ghostAppear",
+			"files": [
+				"ghostAppear.ogg"
+			],
+			"file_sizes": [
+				55961
+			],
+			"type": "sound"
+		},
+		{
 			"name": "ghostBullet",
 			"files": [
 				"ghostBullet.png"
@@ -413,6 +459,16 @@
 			"type": "image",
 			"original_width": 416,
 			"original_height": 54
+		},
+		{
+			"name": "ghostDie",
+			"files": [
+				"ghostDie.ogg"
+			],
+			"file_sizes": [
+				57497
+			],
+			"type": "sound"
 		},
 		{
 			"name": "hBlurVertexShader_vert",
@@ -519,6 +575,16 @@
 			"original_height": 180
 		},
 		{
+			"name": "hurt",
+			"files": [
+				"hurt.ogg"
+			],
+			"file_sizes": [
+				8634
+			],
+			"type": "sound"
+		},
+		{
 			"name": "lvl1_tmx",
 			"files": [
 				"lvl1.tmx"
@@ -534,7 +600,7 @@
 				"lvl2.tmx"
 			],
 			"file_sizes": [
-				15839
+				15838
 			],
 			"type": "blob"
 		},
@@ -1406,6 +1472,16 @@
 			]
 		},
 		{
+			"name": "powerUp",
+			"files": [
+				"powerUp.ogg"
+			],
+			"file_sizes": [
+				14139
+			],
+			"type": "sound"
+		},
+		{
 			"name": "quake",
 			"files": [
 				"quake.png"
@@ -1700,6 +1776,16 @@
 				}
 			],
 			"types": []
+		},
+		{
+			"name": "shoot",
+			"files": [
+				"shoot.ogg"
+			],
+			"file_sizes": [
+				5323
+			],
+			"type": "sound"
 		},
 		{
 			"name": "simpleAlpha_frag",

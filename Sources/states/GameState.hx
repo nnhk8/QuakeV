@@ -104,7 +104,13 @@ class GameState extends State {
 		resources.add(new SoundLoader("sound1", false));
 		resources.add(new SoundLoader("sound2", false));
 		resources.add(new SoundLoader("sound3", false));
-	}
+		resources.add(new SoundLoader("shoot", true));
+		resources.add(new SoundLoader("explosion", true));
+		resources.add(new SoundLoader("powerUp", true));
+		resources.add(new SoundLoader("ghostAppear", true));
+		resources.add(new SoundLoader("ghostDie", true));
+		resources.add(new SoundLoader("hurt", true));
+	 }
 
 	override function init() {
 		stageColor(0.5, .5, 0.5);
@@ -197,8 +203,8 @@ class GameState extends State {
 	override function update(dt:Float) {
 		super.update(dt);
 		lifeText.text = "Lifes "+GlobalGameData.playerLifes;
-		flyPowerUpText.text = "Fly PowerUp "+Std.string(player.flyTime).charAt(0)+ " of " + player.flyTimeMax;
-		ghostBulletPowerUpText.text = "Ghost Bullet Damage PowerUp "+Std.string(GlobalGameData.ghostBulletsTime).charAt(0) + " of " + GlobalGameData.ghostBulletsTimeMax;
+		flyPowerUpText.text = "Fly PowerUp "+Std.int(player.flyTime)+ " of " + player.flyTimeMax;
+		ghostBulletPowerUpText.text = "Ghost Bullet Damage PowerUp "+Std.int(GlobalGameData.ghostBulletsTime) + " of " + GlobalGameData.ghostBulletsTimeMax;
 
 		if (GlobalGameData.ghostBullets) {
 			GlobalGameData.ghostBulletsTime += dt;
@@ -232,10 +238,12 @@ class GameState extends State {
 	}
 
 	function playerVsGhost(playerC:ICollider, ghostC:ICollider) {
+		SoundManager.playFx("hurt");
 		GlobalGameData.playerLifes--;
 		if (GlobalGameData.playerLifes < 1) {
 			changeState(new EndGame(room));
 		} else {
+			SoundManager.playFx("ghostDie");
 			var enemey:Ghost = ghostC.userData;
 			enemey.damage();
 		}
@@ -245,6 +253,7 @@ class GameState extends State {
 		var saw:Saw = sawC.userData;
 		if (saw.damage){
 			GlobalGameData.playerLifes--;
+			SoundManager.playFx("hurt");
 			if (GlobalGameData.playerLifes < 1) {
 				changeState(new EndGame(room));
 			} else {
@@ -254,6 +263,7 @@ class GameState extends State {
 	}
 
 	function playerVsSpawnZone(playerC:ICollider, spawnZoneC:ICollider) {
+		SoundManager.playFx("ghostAppear");
 		var spawnPositions = LevelPositions.getSpawnPoints();
 		for (pos in spawnPositions) {
 			addChild(new Ghost(pos.x, pos.y, this.enemyCollision));
@@ -267,18 +277,21 @@ class GameState extends State {
 	}
 
 	function playerVsFlyPowerUp(playerC:ICollider, flyPowerUpC:ICollider) {
+		SoundManager.playFx("powerUp");
 		player.activateFly();
 		var fly:FlyPowerUp = cast flyPowerUpC.userData;
 		fly.destroy();
 	}
 
 	function playerVsGhostBulletPowerUp(playerC:ICollider, ghostBulletPowerUpC:ICollider) {
+		SoundManager.playFx("powerUp");
 		GlobalGameData.ghostBullets = true;
 		var ghostBullet:GhostBulletPowerUp = cast ghostBulletPowerUpC.userData;
 		ghostBullet.destroy();
 	}
 
 	function bulletVsGhost(bulletC:ICollider, ghostC:ICollider) {
+		SoundManager.playFx("ghostDie");
 		var enemey:Ghost = ghostC.userData;
 		enemey.damage();
 		var bullet:Bullet = cast bulletC.userData;
@@ -289,6 +302,7 @@ class GameState extends State {
 		if (!GlobalGameData.ghostBullets) {
 			var bullet:Bullet = cast bulletC.userData;
 			bullet.damage();
+			SoundManager.playFx("explosion");
 		}
 	}
 

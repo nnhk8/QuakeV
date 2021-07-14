@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.soundLib.SoundManager;
 import kha.input.KeyCode;
 import kha.math.FastVector2;
 import com.collision.platformer.CollisionGroup;
@@ -69,6 +70,7 @@ class Player extends Entity {
 		if (Input.i.isKeyCodePressed(KeyCode.X)) {
 			var bullet:Bullet = new Bullet(collision.x + collision.width * 0.5, collision.y + collision.height * 0.5,facingDir,bulletsCollision);
 			addChild(bullet);
+			SoundManager.playFx("shoot");
 		}
 		if (fly){
 			flyTime+=dt;

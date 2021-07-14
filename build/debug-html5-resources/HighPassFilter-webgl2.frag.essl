@@ -3,17 +3,26 @@ precision mediump float;
 precision highp int;
 
 uniform highp sampler2D tex;
+uniform highp vec3 brightIndex;
+uniform highp float tolerance;
+uniform highp vec3 darkColor;
+uniform highp vec3 tintColor;
 
 in highp vec2 texCoord;
-out highp vec4 color;
+out highp vec4 FragColor;
 
 void main()
 {
-    highp vec4 col = texture(tex, texCoord);
-    col -= vec4(1.0);
-    highp vec4 bright4 = ((col * (-6.0)) * col) + vec4(2.0);
-    highp float bright = dot(bright4, vec4(0.3333329856395721435546875, 0.3333329856395721435546875, 0.3333329856395721435546875, 0.0));
-    col += vec4(bright + 0.60000002384185791015625);
-    color = col;
+    highp vec4 color = texture(tex, texCoord);
+    highp float brightness = dot(color.xyz, brightIndex);
+    if (brightness > tolerance)
+    {
+        FragColor = vec4(color.xyz, 1.0);
+    }
+    else
+    {
+        FragColor = vec4(darkColor, 1.0);
+    }
+    FragColor *= vec4(tintColor, 1.0);
 }
 

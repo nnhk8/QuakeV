@@ -92,7 +92,7 @@
  </layer>
  <objectgroup id="7" name="Object Layer 1">
   <object id="5" name="playerPosition" x="72.599" y="67.712" width="70.1703" height="39.1648"/>
-  <object id="6" name="winZone" x="268.401" y="605.417" width="59.5934" height="60.2802"/>
+  <object id="6" name="winZone" x="1764.4" y="35.4166" width="59.5934" height="60.2802"/>
   <object id="14" name="spawnZone" x="629.667" y="230.833" width="98" height="77">
    <properties>
     <property name="amount" type="int" value="4"/>

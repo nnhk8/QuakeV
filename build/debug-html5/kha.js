@@ -20049,6 +20049,7 @@ gameObjects_Player.prototype = $extend(com_framework_utils_Entity.prototype,{
 		if(com_framework_utils_Input.i.isKeyCodePressed(88)) {
 			var bullet = new gameObjects_Bullet(this.collision.x + this.collision.width * 0.5,this.collision.y + this.collision.height * 0.5,this.facingDir,this.bulletsCollision);
 			this.addChild(bullet);
+			com_soundLib_SoundManager.playFx("shoot");
 		}
 		if(this.fly) {
 			this.flyTime += dt;
@@ -23301,7 +23302,7 @@ kha__$Assets_ImageList.prototype = {
 	,__class__: kha__$Assets_ImageList
 };
 var kha__$Assets_SoundList = function() {
-	this.names = ["WinSong","sound1","sound2","sound3"];
+	this.names = ["WinSong","endGame","explosion","ghostAppear","ghostDie","hurt","powerUp","shoot","sound1","sound2","sound3"];
 	this.sound3Size = 3170703;
 	this.sound3Description = { name : "sound3", file_sizes : [3170703], files : ["sound3.ogg"], type : "sound"};
 	this.sound3Name = "sound3";
@@ -23314,6 +23315,34 @@ var kha__$Assets_SoundList = function() {
 	this.sound1Description = { name : "sound1", file_sizes : [2256307], files : ["sound1.ogg"], type : "sound"};
 	this.sound1Name = "sound1";
 	this.sound1 = null;
+	this.shootSize = 5323;
+	this.shootDescription = { name : "shoot", file_sizes : [5323], files : ["shoot.ogg"], type : "sound"};
+	this.shootName = "shoot";
+	this.shoot = null;
+	this.powerUpSize = 14139;
+	this.powerUpDescription = { name : "powerUp", file_sizes : [14139], files : ["powerUp.ogg"], type : "sound"};
+	this.powerUpName = "powerUp";
+	this.powerUp = null;
+	this.hurtSize = 8634;
+	this.hurtDescription = { name : "hurt", file_sizes : [8634], files : ["hurt.ogg"], type : "sound"};
+	this.hurtName = "hurt";
+	this.hurt = null;
+	this.ghostDieSize = 57497;
+	this.ghostDieDescription = { name : "ghostDie", file_sizes : [57497], files : ["ghostDie.ogg"], type : "sound"};
+	this.ghostDieName = "ghostDie";
+	this.ghostDie = null;
+	this.ghostAppearSize = 55961;
+	this.ghostAppearDescription = { name : "ghostAppear", file_sizes : [55961], files : ["ghostAppear.ogg"], type : "sound"};
+	this.ghostAppearName = "ghostAppear";
+	this.ghostAppear = null;
+	this.explosionSize = 14143;
+	this.explosionDescription = { name : "explosion", file_sizes : [14143], files : ["explosion.ogg"], type : "sound"};
+	this.explosionName = "explosion";
+	this.explosion = null;
+	this.endGameSize = 104468;
+	this.endGameDescription = { name : "endGame", file_sizes : [104468], files : ["endGame.ogg"], type : "sound"};
+	this.endGameName = "endGame";
+	this.endGame = null;
 	this.WinSongSize = 115444;
 	this.WinSongDescription = { name : "WinSong", file_sizes : [115444], files : ["WinSong.ogg"], type : "sound"};
 	this.WinSongName = "WinSong";
@@ -23337,6 +23366,97 @@ kha__$Assets_SoundList.prototype = {
 	,WinSongUnload: function() {
 		this.WinSong.unload();
 		this.WinSong = null;
+	}
+	,endGame: null
+	,endGameName: null
+	,endGameDescription: null
+	,endGameSize: null
+	,endGameLoad: function(done,failure) {
+		kha_Assets.loadSound("endGame",function(sound) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 140, className : "kha._Assets.SoundList", methodName : "endGameLoad"});
+	}
+	,endGameUnload: function() {
+		this.endGame.unload();
+		this.endGame = null;
+	}
+	,explosion: null
+	,explosionName: null
+	,explosionDescription: null
+	,explosionSize: null
+	,explosionLoad: function(done,failure) {
+		kha_Assets.loadSound("explosion",function(sound) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 140, className : "kha._Assets.SoundList", methodName : "explosionLoad"});
+	}
+	,explosionUnload: function() {
+		this.explosion.unload();
+		this.explosion = null;
+	}
+	,ghostAppear: null
+	,ghostAppearName: null
+	,ghostAppearDescription: null
+	,ghostAppearSize: null
+	,ghostAppearLoad: function(done,failure) {
+		kha_Assets.loadSound("ghostAppear",function(sound) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 140, className : "kha._Assets.SoundList", methodName : "ghostAppearLoad"});
+	}
+	,ghostAppearUnload: function() {
+		this.ghostAppear.unload();
+		this.ghostAppear = null;
+	}
+	,ghostDie: null
+	,ghostDieName: null
+	,ghostDieDescription: null
+	,ghostDieSize: null
+	,ghostDieLoad: function(done,failure) {
+		kha_Assets.loadSound("ghostDie",function(sound) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 140, className : "kha._Assets.SoundList", methodName : "ghostDieLoad"});
+	}
+	,ghostDieUnload: function() {
+		this.ghostDie.unload();
+		this.ghostDie = null;
+	}
+	,hurt: null
+	,hurtName: null
+	,hurtDescription: null
+	,hurtSize: null
+	,hurtLoad: function(done,failure) {
+		kha_Assets.loadSound("hurt",function(sound) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 140, className : "kha._Assets.SoundList", methodName : "hurtLoad"});
+	}
+	,hurtUnload: function() {
+		this.hurt.unload();
+		this.hurt = null;
+	}
+	,powerUp: null
+	,powerUpName: null
+	,powerUpDescription: null
+	,powerUpSize: null
+	,powerUpLoad: function(done,failure) {
+		kha_Assets.loadSound("powerUp",function(sound) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 140, className : "kha._Assets.SoundList", methodName : "powerUpLoad"});
+	}
+	,powerUpUnload: function() {
+		this.powerUp.unload();
+		this.powerUp = null;
+	}
+	,shoot: null
+	,shootName: null
+	,shootDescription: null
+	,shootSize: null
+	,shootLoad: function(done,failure) {
+		kha_Assets.loadSound("shoot",function(sound) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 140, className : "kha._Assets.SoundList", methodName : "shootLoad"});
+	}
+	,shootUnload: function() {
+		this.shoot.unload();
+		this.shoot = null;
 	}
 	,sound1: null
 	,sound1Name: null
@@ -23386,8 +23506,8 @@ var kha__$Assets_BlobList = function() {
 	this.lvl3_tmxDescription = { name : "lvl3_tmx", file_sizes : [15588], files : ["lvl3.tmx"], type : "blob"};
 	this.lvl3_tmxName = "lvl3_tmx";
 	this.lvl3_tmx = null;
-	this.lvl2_tmxSize = 15839;
-	this.lvl2_tmxDescription = { name : "lvl2_tmx", file_sizes : [15839], files : ["lvl2.tmx"], type : "blob"};
+	this.lvl2_tmxSize = 15838;
+	this.lvl2_tmxDescription = { name : "lvl2_tmx", file_sizes : [15838], files : ["lvl2.tmx"], type : "blob"};
 	this.lvl2_tmxName = "lvl2_tmx";
 	this.lvl2_tmx = null;
 	this.lvl1_tmxSize = 13428;
@@ -53484,6 +53604,7 @@ states_EndGame.prototype = $extend(com_framework_utils_State.prototype,{
 		atlas.add(new com_loading_basicResources_ImageLoader("win"));
 		resources.add(atlas);
 		resources.add(new com_loading_basicResources_SoundLoader("WinSong",false));
+		resources.add(new com_loading_basicResources_SoundLoader("endGame",false));
 	}
 	,init: function() {
 		if(!this.win) {
@@ -53493,6 +53614,7 @@ states_EndGame.prototype = $extend(com_framework_utils_State.prototype,{
 			image.x = kha_System.windowWidth() * 0.35;
 			image.y = kha_System.windowHeight() * 0.1;
 			this.stage.addChild(image);
+			com_soundLib_SoundManager.playMusic("endGame",false);
 		} else {
 			this.stageColor(47,242,190);
 			var image = new com_gEngine_display_Sprite("win");
@@ -53584,6 +53706,12 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		resources.add(new com_loading_basicResources_SoundLoader("sound1",false));
 		resources.add(new com_loading_basicResources_SoundLoader("sound2",false));
 		resources.add(new com_loading_basicResources_SoundLoader("sound3",false));
+		resources.add(new com_loading_basicResources_SoundLoader("shoot",true));
+		resources.add(new com_loading_basicResources_SoundLoader("explosion",true));
+		resources.add(new com_loading_basicResources_SoundLoader("powerUp",true));
+		resources.add(new com_loading_basicResources_SoundLoader("ghostAppear",true));
+		resources.add(new com_loading_basicResources_SoundLoader("ghostDie",true));
+		resources.add(new com_loading_basicResources_SoundLoader("hurt",true));
 	}
 	,init: function() {
 		this.stageColor(0.5,.5,0.5);
@@ -53674,8 +53802,8 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	,update: function(dt) {
 		com_framework_utils_State.prototype.update.call(this,dt);
 		this.lifeText.set_text("Lifes " + states_GlobalGameData.playerLifes);
-		this.flyPowerUpText.set_text("Fly PowerUp " + Std.string(this.player.flyTime).charAt(0) + " of " + this.player.flyTimeMax);
-		this.ghostBulletPowerUpText.set_text("Ghost Bullet Damage PowerUp " + Std.string(states_GlobalGameData.ghostBulletsTime).charAt(0) + " of " + states_GlobalGameData.ghostBulletsTimeMax);
+		this.flyPowerUpText.set_text("Fly PowerUp " + (this.player.flyTime | 0) + " of " + this.player.flyTimeMax);
+		this.ghostBulletPowerUpText.set_text("Ghost Bullet Damage PowerUp " + (states_GlobalGameData.ghostBulletsTime | 0) + " of " + states_GlobalGameData.ghostBulletsTimeMax);
 		if(states_GlobalGameData.ghostBullets) {
 			states_GlobalGameData.ghostBulletsTime += dt;
 			if(states_GlobalGameData.ghostBulletsTime > states_GlobalGameData.ghostBulletsTimeMax) {
@@ -53703,10 +53831,12 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.ghostBulletsCollisions,$bind(this,this.playerVsGhostBulletPowerUp));
 	}
 	,playerVsGhost: function(playerC,ghostC) {
+		com_soundLib_SoundManager.playFx("hurt");
 		states_GlobalGameData.playerLifes--;
 		if(states_GlobalGameData.playerLifes < 1) {
 			this.changeState(new states_EndGame(this.room));
 		} else {
+			com_soundLib_SoundManager.playFx("ghostDie");
 			var enemey = ghostC.userData;
 			enemey.damage();
 		}
@@ -53715,6 +53845,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		var saw = sawC.userData;
 		if(saw.damage) {
 			states_GlobalGameData.playerLifes--;
+			com_soundLib_SoundManager.playFx("hurt");
 			if(states_GlobalGameData.playerLifes < 1) {
 				this.changeState(new states_EndGame(this.room));
 			} else {
@@ -53723,6 +53854,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		}
 	}
 	,playerVsSpawnZone: function(playerC,spawnZoneC) {
+		com_soundLib_SoundManager.playFx("ghostAppear");
 		var spawnPositions = gameObjects_LevelPositions.getSpawnPoints();
 		var _g = 0;
 		while(_g < spawnPositions.length) {
@@ -53737,16 +53869,19 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		this.changeState(new states_EndGame(this.room));
 	}
 	,playerVsFlyPowerUp: function(playerC,flyPowerUpC) {
+		com_soundLib_SoundManager.playFx("powerUp");
 		this.player.activateFly();
 		var fly = flyPowerUpC.userData;
 		fly.destroy();
 	}
 	,playerVsGhostBulletPowerUp: function(playerC,ghostBulletPowerUpC) {
+		com_soundLib_SoundManager.playFx("powerUp");
 		states_GlobalGameData.ghostBullets = true;
 		var ghostBullet = ghostBulletPowerUpC.userData;
 		ghostBullet.destroy();
 	}
 	,bulletVsGhost: function(bulletC,ghostC) {
+		com_soundLib_SoundManager.playFx("ghostDie");
 		var enemey = ghostC.userData;
 		enemey.damage();
 		var bullet = bulletC.userData;
@@ -53756,6 +53891,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		if(!states_GlobalGameData.ghostBullets) {
 			var bullet = bulletC.userData;
 			bullet.damage();
+			com_soundLib_SoundManager.playFx("explosion");
 		}
 	}
 	,createTouchJoystick: function() {
@@ -54023,8 +54159,8 @@ kha_Scheduler.timeWarpSaveTime = 10.0;
 kha_Scheduler.DIF_COUNT = 3;
 kha_Scheduler.maxframetime = 0.5;
 kha_Scheduler.startTime = 0;
-kha_Shaders.HighPassFilter_fragData0 = "s644:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4OwoKdmFyeWluZyBoaWdocCB2ZWMyIHRleENvb3JkOwoKdm9pZCBtYWluKCkKewogICAgaGlnaHAgdmVjNCBjb2wgPSB0ZXh0dXJlMkQodGV4LCB0ZXhDb29yZCk7CiAgICBjb2wgLT0gdmVjNCgxLjApOwogICAgaGlnaHAgdmVjNCBicmlnaHQ0ID0gKChjb2wgKiAoLTYuMCkpICogY29sKSArIHZlYzQoMi4wKTsKICAgIGhpZ2hwIGZsb2F0IGJyaWdodCA9IGRvdChicmlnaHQ0LCB2ZWM0KDAuMzMzMzMyOTg1NjM5NTcyMTQzNTU0Njg3NSwgMC4zMzMzMzI5ODU2Mzk1NzIxNDM1NTQ2ODc1LCAwLjMzMzMzMjk4NTYzOTU3MjE0MzU1NDY4NzUsIDAuMCkpOwogICAgY29sICs9IHZlYzQoYnJpZ2h0ICsgMC42MDAwMDAwMjM4NDE4NTc5MTAxNTYyNSk7CiAgICBnbF9GcmFnRGF0YVswXSA9IGNvbDsKfQoK";
-kha_Shaders.HighPassFilter_fragData1 = "s656:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4OwoKaW4gaGlnaHAgdmVjMiB0ZXhDb29yZDsKb3V0IGhpZ2hwIHZlYzQgY29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBoaWdocCB2ZWM0IGNvbCA9IHRleHR1cmUodGV4LCB0ZXhDb29yZCk7CiAgICBjb2wgLT0gdmVjNCgxLjApOwogICAgaGlnaHAgdmVjNCBicmlnaHQ0ID0gKChjb2wgKiAoLTYuMCkpICogY29sKSArIHZlYzQoMi4wKTsKICAgIGhpZ2hwIGZsb2F0IGJyaWdodCA9IGRvdChicmlnaHQ0LCB2ZWM0KDAuMzMzMzMyOTg1NjM5NTcyMTQzNTU0Njg3NSwgMC4zMzMzMzI5ODU2Mzk1NzIxNDM1NTQ2ODc1LCAwLjMzMzMzMjk4NTYzOTU3MjE0MzU1NDY4NzUsIDAuMCkpOwogICAgY29sICs9IHZlYzQoYnJpZ2h0ICsgMC42MDAwMDAwMjM4NDE4NTc5MTAxNTYyNSk7CiAgICBjb2xvciA9IGNvbDsKfQoK";
+kha_Shaders.HighPassFilter_fragData0 = "s760:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4Owp1bmlmb3JtIGhpZ2hwIHZlYzMgYnJpZ2h0SW5kZXg7CnVuaWZvcm0gaGlnaHAgZmxvYXQgdG9sZXJhbmNlOwp1bmlmb3JtIGhpZ2hwIHZlYzMgZGFya0NvbG9yOwp1bmlmb3JtIGhpZ2hwIHZlYzMgdGludENvbG9yOwoKdmFyeWluZyBoaWdocCB2ZWMyIHRleENvb3JkOwoKdm9pZCBtYWluKCkKewogICAgaGlnaHAgdmVjNCBjb2xvciA9IHRleHR1cmUyRCh0ZXgsIHRleENvb3JkKTsKICAgIGhpZ2hwIGZsb2F0IGJyaWdodG5lc3MgPSBkb3QoY29sb3IueHl6LCBicmlnaHRJbmRleCk7CiAgICBpZiAoYnJpZ2h0bmVzcyA%IHRvbGVyYW5jZSkKICAgIHsKICAgICAgICBnbF9GcmFnRGF0YVswXSA9IHZlYzQoY29sb3IueHl6LCAxLjApOwogICAgfQogICAgZWxzZQogICAgewogICAgICAgIGdsX0ZyYWdEYXRhWzBdID0gdmVjNChkYXJrQ29sb3IsIDEuMCk7CiAgICB9CiAgICBnbF9GcmFnRGF0YVswXSAqPSB2ZWM0KHRpbnRDb2xvciwgMS4wKTsKfQoK";
+kha_Shaders.HighPassFilter_fragData1 = "s770:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4Owp1bmlmb3JtIGhpZ2hwIHZlYzMgYnJpZ2h0SW5kZXg7CnVuaWZvcm0gaGlnaHAgZmxvYXQgdG9sZXJhbmNlOwp1bmlmb3JtIGhpZ2hwIHZlYzMgZGFya0NvbG9yOwp1bmlmb3JtIGhpZ2hwIHZlYzMgdGludENvbG9yOwoKaW4gaGlnaHAgdmVjMiB0ZXhDb29yZDsKb3V0IGhpZ2hwIHZlYzQgRnJhZ0NvbG9yOwoKdm9pZCBtYWluKCkKewogICAgaGlnaHAgdmVjNCBjb2xvciA9IHRleHR1cmUodGV4LCB0ZXhDb29yZCk7CiAgICBoaWdocCBmbG9hdCBicmlnaHRuZXNzID0gZG90KGNvbG9yLnh5eiwgYnJpZ2h0SW5kZXgpOwogICAgaWYgKGJyaWdodG5lc3MgPiB0b2xlcmFuY2UpCiAgICB7CiAgICAgICAgRnJhZ0NvbG9yID0gdmVjNChjb2xvci54eXosIDEuMCk7CiAgICB9CiAgICBlbHNlCiAgICB7CiAgICAgICAgRnJhZ0NvbG9yID0gdmVjNChkYXJrQ29sb3IsIDEuMCk7CiAgICB9CiAgICBGcmFnQ29sb3IgKj0gdmVjNCh0aW50Q29sb3IsIDEuMCk7Cn0KCg";
 kha_Shaders.ShBrightness_fragData0 = "s439:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4Owp1bmlmb3JtIGhpZ2hwIGZsb2F0IGJyaWdodG5lc3M7Cgp2YXJ5aW5nIGhpZ2hwIHZlYzIgdGV4Q29vcmQ7Cgp2b2lkIG1haW4oKQp7CiAgICBoaWdocCB2ZWM0IGNvbCA9IHRleHR1cmUyRCh0ZXgsIHRleENvb3JkKTsKICAgIGhpZ2hwIHZlYzMgXzI2ID0gY29sLnh5eiAqIGJyaWdodG5lc3M7CiAgICBjb2wgPSB2ZWM0KF8yNi54LCBfMjYueSwgXzI2LnosIGNvbC53KTsKICAgIGdsX0ZyYWdEYXRhWzBdID0gY29sOwp9Cgo";
 kha_Shaders.ShBrightness_fragData1 = "s451:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4Owp1bmlmb3JtIGhpZ2hwIGZsb2F0IGJyaWdodG5lc3M7CgppbiBoaWdocCB2ZWMyIHRleENvb3JkOwpvdXQgaGlnaHAgdmVjNCBjb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGhpZ2hwIHZlYzQgY29sID0gdGV4dHVyZSh0ZXgsIHRleENvb3JkKTsKICAgIGhpZ2hwIHZlYzMgXzI2ID0gY29sLnh5eiAqIGJyaWdodG5lc3M7CiAgICBjb2wgPSB2ZWM0KF8yNi54LCBfMjYueSwgXzI2LnosIGNvbC53KTsKICAgIGNvbG9yID0gY29sOwp9Cgo";
 kha_Shaders.alpha_vertData0 = "s363:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKdW5pZm9ybSBmbG9hdCBhbHBoYTsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzMgdGV4Q29vcmQ7CmF0dHJpYnV0ZSB2ZWMyIHRleFBvc2l0aW9uOwoKdm9pZCBtYWluKCkKewogICAgZ2xfUG9zaXRpb24gPSBwcm9qZWN0aW9uTWF0cml4ICogdmVjNCh2ZXJ0ZXhQb3NpdGlvbiwgMS4wKTsKICAgIHRleENvb3JkID0gdmVjMyh0ZXhQb3NpdGlvbiwgYWxwaGEpOwp9Cgo";
@@ -54055,8 +54191,8 @@ kha_Shaders.mosaic_fragData0 = "s370:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZ
 kha_Shaders.mosaic_fragData1 = "s392:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBmbG9hdCB0aWxlczsKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4OwoKaW4gaGlnaHAgdmVjMiB0ZXhDb29yZDsKb3V0IGhpZ2hwIHZlYzQgRnJhZ0NvbG9yOwoKdm9pZCBtYWluKCkKewogICAgaGlnaHAgdmVjMiB1diA9IHRleENvb3JkOwogICAgdXYgPSBmbG9vcih1diAqIHRpbGVzKSAvIHZlYzIodGlsZXMpOwogICAgRnJhZ0NvbG9yID0gdGV4dHVyZSh0ZXgsIHV2KTsKfQoK";
 kha_Shaders.multiplyColor_fragData0 = "s347:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4Owp1bmlmb3JtIGhpZ2hwIHZlYzQgY29sb3JNdWw7Cgp2YXJ5aW5nIGhpZ2hwIHZlYzIgdGV4Q29vcmQ7Cgp2b2lkIG1haW4oKQp7CiAgICBoaWdocCB2ZWM0IHRleGNvbG9yID0gdGV4dHVyZTJEKHRleCwgdGV4Q29vcmQpICogY29sb3JNdWw7CiAgICBnbF9GcmFnRGF0YVswXSA9IHRleGNvbG9yOwp9Cgo";
 kha_Shaders.multiplyColor_fragData1 = "s370:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4Owp1bmlmb3JtIGhpZ2hwIHZlYzQgY29sb3JNdWw7CgppbiBoaWdocCB2ZWMyIHRleENvb3JkOwpvdXQgaGlnaHAgdmVjNCBGcmFnQ29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBoaWdocCB2ZWM0IHRleGNvbG9yID0gdGV4dHVyZSh0ZXgsIHRleENvb3JkKSAqIGNvbG9yTXVsOwogICAgRnJhZ0NvbG9yID0gdGV4Y29sb3I7Cn0KCg";
-kha_Shaders.outline_fragData0 = "s946:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4Owp1bmlmb3JtIGhpZ2hwIHZlYzIgc3RlcFNpemU7CnVuaWZvcm0gaGlnaHAgdmVjMyBjb2xvcjsKCnZhcnlpbmcgaGlnaHAgdmVjMiB0ZXhDb29yZDsKCnZvaWQgbWFpbigpCnsKICAgIGhpZ2hwIHZlYzQgYmFzZSA9IHRleHR1cmUyRCh0ZXgsIHRleENvb3JkKTsKICAgIGhpZ2hwIGZsb2F0IGFscGhhMSA9IHRleHR1cmUyRCh0ZXgsIHRleENvb3JkICsgdmVjMigwLjAsIHN0ZXBTaXplLnkpKS53OwogICAgYWxwaGExIC09IHRleHR1cmUyRCh0ZXgsIHRleENvb3JkICsgdmVjMigwLjAsIC1zdGVwU2l6ZS55KSkudzsKICAgIGFscGhhMSA9IGFicyhhbHBoYTEpOwogICAgaGlnaHAgZmxvYXQgYWxwaGEyID0gdGV4dHVyZTJEKHRleCwgdGV4Q29vcmQgKyB2ZWMyKHN0ZXBTaXplLngsIDAuMCkpLnc7CiAgICBhbHBoYTIgLT0gdGV4dHVyZTJEKHRleCwgdGV4Q29vcmQgKyB2ZWMyKC1zdGVwU2l6ZS54LCAwLjApKS53OwogICAgYWxwaGEyID0gYWJzKGFscGhhMik7CiAgICBoaWdocCBmbG9hdCBhbHBoYSA9IGNsYW1wKGFscGhhMSArIGFscGhhMiwgMC4wLCAxLjApOwogICAgZ2xfRnJhZ0RhdGFbMF0gPSB2ZWM0KGJhc2UueHl6ICsgKGNvbG9yICogYWxwaGEpLCBiYXNlLncgKyBhbHBoYSk7Cn0KCg";
-kha_Shaders.outline_fragData1 = "s958:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4Owp1bmlmb3JtIGhpZ2hwIHZlYzIgc3RlcFNpemU7CnVuaWZvcm0gaGlnaHAgdmVjMyBjb2xvcjsKCmluIGhpZ2hwIHZlYzIgdGV4Q29vcmQ7Cm91dCBoaWdocCB2ZWM0IEZyYWdDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGhpZ2hwIHZlYzQgYmFzZSA9IHRleHR1cmUodGV4LCB0ZXhDb29yZCk7CiAgICBoaWdocCBmbG9hdCBhbHBoYTEgPSB0ZXh0dXJlKHRleCwgdGV4Q29vcmQgKyB2ZWMyKDAuMCwgc3RlcFNpemUueSkpLnc7CiAgICBhbHBoYTEgLT0gdGV4dHVyZSh0ZXgsIHRleENvb3JkICsgdmVjMigwLjAsIC1zdGVwU2l6ZS55KSkudzsKICAgIGFscGhhMSA9IGFicyhhbHBoYTEpOwogICAgaGlnaHAgZmxvYXQgYWxwaGEyID0gdGV4dHVyZSh0ZXgsIHRleENvb3JkICsgdmVjMihzdGVwU2l6ZS54LCAwLjApKS53OwogICAgYWxwaGEyIC09IHRleHR1cmUodGV4LCB0ZXhDb29yZCArIHZlYzIoLXN0ZXBTaXplLngsIDAuMCkpLnc7CiAgICBhbHBoYTIgPSBhYnMoYWxwaGEyKTsKICAgIGhpZ2hwIGZsb2F0IGFscGhhID0gY2xhbXAoYWxwaGExICsgYWxwaGEyLCAwLjAsIDEuMCk7CiAgICBGcmFnQ29sb3IgPSB2ZWM0KGJhc2UueHl6ICsgKGNvbG9yICogYWxwaGEpLCBiYXNlLncgKyBhbHBoYSk7Cn0KCg";
+kha_Shaders.outline_fragData0 = "s1342:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4Owp1bmlmb3JtIGhpZ2hwIHZlYzIgc3RlcFNpemU7CnVuaWZvcm0gaGlnaHAgdmVjMyBjb2xvcjsKCnZhcnlpbmcgaGlnaHAgdmVjMiB0ZXhDb29yZDsKCnZvaWQgbWFpbigpCnsKICAgIGhpZ2hwIHZlYzQgYmFzZSA9IHRleHR1cmUyRCh0ZXgsIHRleENvb3JkKTsKICAgIGhpZ2hwIGZsb2F0IGFscGhhMSA9IHRleHR1cmUyRCh0ZXgsIHRleENvb3JkICsgdmVjMigwLjAsIHN0ZXBTaXplLnkpKS53OwogICAgaGlnaHAgZmxvYXQgYWxwaGEzID0gYWJzKGFscGhhMSAtIGJhc2Uudyk7CiAgICBoaWdocCBmbG9hdCBhbHBoYTFfID0gdGV4dHVyZTJEKHRleCwgdGV4Q29vcmQgKyB2ZWMyKDAuMCwgLXN0ZXBTaXplLnkpKS53OwogICAgYWxwaGExID0gYWJzKGFscGhhMSAtIGFscGhhMV8pOwogICAgaGlnaHAgZmxvYXQgYWxwaGE1ID0gYWJzKGFscGhhMV8gLSBiYXNlLncpOwogICAgaGlnaHAgZmxvYXQgYWxwaGEyID0gdGV4dHVyZTJEKHRleCwgdGV4Q29vcmQgKyB2ZWMyKHN0ZXBTaXplLngsIDAuMCkpLnc7CiAgICBoaWdocCBmbG9hdCBhbHBoYTQgPSBhYnMoYWxwaGEyIC0gYmFzZS53KTsKICAgIGhpZ2hwIGZsb2F0IGFscGhhMl8gPSB0ZXh0dXJlMkQodGV4LCB0ZXhDb29yZCArIHZlYzIoLXN0ZXBTaXplLngsIDAuMCkpLnc7CiAgICBhbHBoYTIgPSBhYnMoYWxwaGEyIC0gYWxwaGEyXyk7CiAgICBoaWdocCBmbG9hdCBhbHBoYTYgPSBhYnMoYWxwaGEyXyAtIGJhc2Uudyk7CiAgICBoaWdocCBmbG9hdCBhbHBoYSA9IGNsYW1wKCgoKCgoYWxwaGExICsgYWxwaGEyKSArIGFscGhhMykgKyBhbHBoYTQpICsgYWxwaGE1KSArIGFscGhhNikgKiAoMS4wIC0gYmFzZS53KSwgMC4wLCAxLjApOwogICAgZ2xfRnJhZ0RhdGFbMF0gPSB2ZWM0KGJhc2UueHl6ICsgKGNvbG9yICogYWxwaGEpLCBiYXNlLncgKyBhbHBoYSk7Cn0KCg";
+kha_Shaders.outline_fragData1 = "s1354:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdW5pZm9ybSBoaWdocCBzYW1wbGVyMkQgdGV4Owp1bmlmb3JtIGhpZ2hwIHZlYzIgc3RlcFNpemU7CnVuaWZvcm0gaGlnaHAgdmVjMyBjb2xvcjsKCmluIGhpZ2hwIHZlYzIgdGV4Q29vcmQ7Cm91dCBoaWdocCB2ZWM0IEZyYWdDb2xvcjsKCnZvaWQgbWFpbigpCnsKICAgIGhpZ2hwIHZlYzQgYmFzZSA9IHRleHR1cmUodGV4LCB0ZXhDb29yZCk7CiAgICBoaWdocCBmbG9hdCBhbHBoYTEgPSB0ZXh0dXJlKHRleCwgdGV4Q29vcmQgKyB2ZWMyKDAuMCwgc3RlcFNpemUueSkpLnc7CiAgICBoaWdocCBmbG9hdCBhbHBoYTMgPSBhYnMoYWxwaGExIC0gYmFzZS53KTsKICAgIGhpZ2hwIGZsb2F0IGFscGhhMV8gPSB0ZXh0dXJlKHRleCwgdGV4Q29vcmQgKyB2ZWMyKDAuMCwgLXN0ZXBTaXplLnkpKS53OwogICAgYWxwaGExID0gYWJzKGFscGhhMSAtIGFscGhhMV8pOwogICAgaGlnaHAgZmxvYXQgYWxwaGE1ID0gYWJzKGFscGhhMV8gLSBiYXNlLncpOwogICAgaGlnaHAgZmxvYXQgYWxwaGEyID0gdGV4dHVyZSh0ZXgsIHRleENvb3JkICsgdmVjMihzdGVwU2l6ZS54LCAwLjApKS53OwogICAgaGlnaHAgZmxvYXQgYWxwaGE0ID0gYWJzKGFscGhhMiAtIGJhc2Uudyk7CiAgICBoaWdocCBmbG9hdCBhbHBoYTJfID0gdGV4dHVyZSh0ZXgsIHRleENvb3JkICsgdmVjMigtc3RlcFNpemUueCwgMC4wKSkudzsKICAgIGFscGhhMiA9IGFicyhhbHBoYTIgLSBhbHBoYTJfKTsKICAgIGhpZ2hwIGZsb2F0IGFscGhhNiA9IGFicyhhbHBoYTJfIC0gYmFzZS53KTsKICAgIGhpZ2hwIGZsb2F0IGFscGhhID0gY2xhbXAoKCgoKChhbHBoYTEgKyBhbHBoYTIpICsgYWxwaGEzKSArIGFscGhhNCkgKyBhbHBoYTUpICsgYWxwaGE2KSAqICgxLjAgLSBiYXNlLncpLCAwLjAsIDEuMCk7CiAgICBGcmFnQ29sb3IgPSB2ZWM0KGJhc2UueHl6ICsgKGNvbG9yICogYWxwaGEpLCBiYXNlLncgKyBhbHBoYSk7Cn0KCg";
 kha_Shaders.painter_colored_fragData0 = "s198:I3ZlcnNpb24gMTAwCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKdmFyeWluZyBoaWdocCB2ZWM0IGZyYWdtZW50Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9GcmFnRGF0YVswXSA9IGZyYWdtZW50Q29sb3I7Cn0KCg";
 kha_Shaders.painter_colored_fragData1 = "s223:I3ZlcnNpb24gMzAwIGVzCnByZWNpc2lvbiBtZWRpdW1wIGZsb2F0OwpwcmVjaXNpb24gaGlnaHAgaW50OwoKb3V0IGhpZ2hwIHZlYzQgRnJhZ0NvbG9yOwppbiBoaWdocCB2ZWM0IGZyYWdtZW50Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBGcmFnQ29sb3IgPSBmcmFnbWVudENvbG9yOwp9Cgo";
 kha_Shaders.painter_colored_vertData0 = "s331:I3ZlcnNpb24gMTAwCgp1bmlmb3JtIG1hdDQgcHJvamVjdGlvbk1hdHJpeDsKCmF0dHJpYnV0ZSB2ZWMzIHZlcnRleFBvc2l0aW9uOwp2YXJ5aW5nIHZlYzQgZnJhZ21lbnRDb2xvcjsKYXR0cmlidXRlIHZlYzQgdmVydGV4Q29sb3I7Cgp2b2lkIG1haW4oKQp7CiAgICBnbF9Qb3NpdGlvbiA9IHByb2plY3Rpb25NYXRyaXggKiB2ZWM0KHZlcnRleFBvc2l0aW9uLCAxLjApOwogICAgZnJhZ21lbnRDb2xvciA9IHZlcnRleENvbG9yOwp9Cgo";
