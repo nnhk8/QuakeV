@@ -524,7 +524,7 @@
 				"lvl1.tmx"
 			],
 			"file_sizes": [
-				12416
+				13541
 			],
 			"type": "blob"
 		},
@@ -534,7 +534,7 @@
 				"lvl2.tmx"
 			],
 			"file_sizes": [
-				12416
+				15839
 			],
 			"type": "blob"
 		},
@@ -544,7 +544,7 @@
 				"lvl3.tmx"
 			],
 			"file_sizes": [
-				12413
+				12916
 			],
 			"type": "blob"
 		},
@@ -2175,10 +2175,10 @@
 				"tiles2.png"
 			],
 			"file_sizes": [
-				30323
+				146741
 			],
 			"type": "image",
-			"original_width": 128,
+			"original_width": 288,
 			"original_height": 416
 		},
 		{

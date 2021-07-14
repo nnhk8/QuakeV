@@ -115,7 +115,7 @@ class GameState extends State {
 		worldMap = new Tilemap("lvl" + room + "_tmx");
 
 		worldMap.init(parseTileLayers, parseMapObjects);
-		stage.defaultCamera().limits(32, 0, worldMap.widthIntTiles * 32 - 2 * 32, worldMap.heightInTiles * 32);
+		stage.defaultCamera().limits(32, 0, worldMap.widthIntTiles * 32, worldMap.heightInTiles * 32);
 		createTouchJoystick();
 		this.buildLevel();
 
@@ -274,7 +274,7 @@ class GameState extends State {
 
 	private function buildLevel() {
 		switch (room) {
-			case 2:
+			case 1:
 				var a = new FastVector2(1230, 332);
 				var b = new FastVector2(1555, 332);
 				var c = new FastVector2(1555, 500);
@@ -284,7 +284,7 @@ class GameState extends State {
 				var saw2 = new Saw(LevelPositions.getRectangularPath(c, d, a, b));
 				addChild(saw2);
 				SoundManager.playMusic("sound1");
-			case 1:
+			case 2:
 				SoundManager.playMusic("sound2");
 			case 3:
 				SoundManager.playMusic("sound3");

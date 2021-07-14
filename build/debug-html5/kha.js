@@ -23100,8 +23100,8 @@ js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl = function(begin,end) {
 };
 var kha__$Assets_ImageList = function() {
 	this.names = ["chain","explosion","flying","game_over","ghost","ghostBullet","hero","quake","tiles2"];
-	this.tiles2Size = 30323;
-	this.tiles2Description = { name : "tiles2", original_height : 416, file_sizes : [30323], original_width : 128, files : ["tiles2.png"], type : "image"};
+	this.tiles2Size = 146741;
+	this.tiles2Description = { name : "tiles2", original_height : 416, file_sizes : [146741], original_width : 288, files : ["tiles2.png"], type : "image"};
 	this.tiles2Name = "tiles2";
 	this.tiles2 = null;
 	this.quakeSize = 23189;
@@ -23345,16 +23345,16 @@ kha__$Assets_SoundList.prototype = {
 };
 var kha__$Assets_BlobList = function() {
 	this.names = ["lvl1_tmx","lvl2_tmx","lvl3_tmx"];
-	this.lvl3_tmxSize = 12413;
-	this.lvl3_tmxDescription = { name : "lvl3_tmx", file_sizes : [12413], files : ["lvl3.tmx"], type : "blob"};
+	this.lvl3_tmxSize = 12916;
+	this.lvl3_tmxDescription = { name : "lvl3_tmx", file_sizes : [12916], files : ["lvl3.tmx"], type : "blob"};
 	this.lvl3_tmxName = "lvl3_tmx";
 	this.lvl3_tmx = null;
-	this.lvl2_tmxSize = 12416;
-	this.lvl2_tmxDescription = { name : "lvl2_tmx", file_sizes : [12416], files : ["lvl2.tmx"], type : "blob"};
+	this.lvl2_tmxSize = 15839;
+	this.lvl2_tmxDescription = { name : "lvl2_tmx", file_sizes : [15839], files : ["lvl2.tmx"], type : "blob"};
 	this.lvl2_tmxName = "lvl2_tmx";
 	this.lvl2_tmx = null;
-	this.lvl1_tmxSize = 12416;
-	this.lvl1_tmxDescription = { name : "lvl1_tmx", file_sizes : [12416], files : ["lvl1.tmx"], type : "blob"};
+	this.lvl1_tmxSize = 13541;
+	this.lvl1_tmxDescription = { name : "lvl1_tmx", file_sizes : [13541], files : ["lvl1.tmx"], type : "blob"};
 	this.lvl1_tmxName = "lvl1_tmx";
 	this.lvl1_tmx = null;
 };
@@ -53540,7 +53540,7 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		states_GlobalGameData.simulationLayer = this.simulationLayer;
 		this.worldMap = new com_collision_platformer_Tilemap("lvl" + this.room + "_tmx");
 		this.worldMap.init($bind(this,this.parseTileLayers),$bind(this,this.parseMapObjects));
-		this.stage.cameras[0].limits(32,0,this.worldMap.widthIntTiles * 32 - 64,this.worldMap.heightInTiles * 32);
+		this.stage.cameras[0].limits(32,0,this.worldMap.widthIntTiles * 32,this.worldMap.heightInTiles * 32);
 		this.createTouchJoystick();
 		this.buildLevel();
 		var scoreText = new com_gEngine_display_Text("Kenney_Thick");
@@ -53677,9 +53677,6 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 	,buildLevel: function() {
 		switch(this.room) {
 		case 1:
-			com_soundLib_SoundManager.playMusic("sound2");
-			break;
-		case 2:
 			var a = new kha_math_FastVector2(1230,332);
 			var b = new kha_math_FastVector2(1555,332);
 			var c = new kha_math_FastVector2(1555,500);
@@ -53689,6 +53686,9 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 			var saw2 = new gameObjects_Saw(gameObjects_LevelPositions.getRectangularPath(c,d,a,b));
 			this.addChild(saw2);
 			com_soundLib_SoundManager.playMusic("sound1");
+			break;
+		case 2:
+			com_soundLib_SoundManager.playMusic("sound2");
 			break;
 		case 3:
 			com_soundLib_SoundManager.playMusic("sound3");
