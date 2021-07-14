@@ -544,7 +544,7 @@
 				"lvl3.tmx"
 			],
 			"file_sizes": [
-				12916
+				15674
 			],
 			"type": "blob"
 		},
@@ -2268,6 +2268,18 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "win",
+			"files": [
+				"win.png"
+			],
+			"file_sizes": [
+				205853
+			],
+			"type": "image",
+			"original_width": 525,
+			"original_height": 457
 		}
 	]
 }

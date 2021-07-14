@@ -1,5 +1,7 @@
 package states;
 
+import com.soundLib.SoundManager;
+import com.loading.basicResources.SoundLoader;
 import kha.Color;
 import com.gEngine.display.Sprite;
 import com.loading.basicResources.ImageLoader;
@@ -17,26 +19,42 @@ class EndGame extends State {
 
     var score:Int;
     var level:Int;
-    public function new(score:Int, level:Int){
+    var win:Bool;
+    public function new(score:Int, level:Int, win:Bool = false){
         this.level=level;
         this.score = score;
+        this.win = win;
         super();
     }
     override function load(resources:Resources) {
-        var atlas=new JoinAtlas(500,500);
+        var atlas=new JoinAtlas(1000,1000);
         atlas.add(new FontLoader("Kenney_Thick",20));
         atlas.add(new ImageLoader("game_over"));
+        atlas.add(new ImageLoader("win"));
         resources.add(atlas);
+        resources.add(new SoundLoader("WinSong", false));
     }
 
     override function init() {
-        this.stageColor(50,0,0);
-        var image=new Sprite("game_over");
-        image.smooth=false;
-        image.x=  Screen.getWidth()*0.33;
-        image.y=Screen.getHeight()*0.1;
-        stage.addChild(image);
-
+        if (!win){
+            this.stageColor(50,0,0);
+            var image=new Sprite("game_over");
+            image.smooth=false;
+            image.x=  Screen.getWidth()*0.33;
+            image.y=Screen.getHeight()*0.1;
+            stage.addChild(image);
+    
+        }else{
+            this.stageColor(0,50,0);
+            var image=new Sprite("win");
+            image.smooth=false;
+            image.x=  Screen.getWidth()*0.30;
+            image.y=Screen.getHeight()*0.1;
+            stage.addChild(image);    
+            SoundManager.playMusic("WinSong");
+        }
+        
+        
 
         var scoreText=new Text("Kenney_Thick");
         scoreText.smooth=false;
@@ -66,6 +84,9 @@ class EndGame extends State {
     override function update(dt:Float) {
         super.update(dt);
         if(Input.i.isKeyCodePressed(KeyCode.Space)){
+            if(level==4){
+                level--;
+            }
            this.changeState(new GameState(this.level));
         }
         if(Input.i.isKeyCodePressed(KeyCode.M)){

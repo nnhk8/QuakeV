@@ -29,4 +29,10 @@ class LevelPositions
 			
 		return complexPath;
 	}
+
+	public static function getLinearPath(a:FastVector2,b:FastVector2):Path
+		{
+			var path = new Linear(a,b);
+			return path;
+		}
 }

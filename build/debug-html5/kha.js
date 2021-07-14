@@ -19986,6 +19986,10 @@ gameObjects_LevelPositions.getRectangularPath = function(a,b,c,d) {
 	var complexPath = new paths_Complex([path1,path2,path3,path4]);
 	return complexPath;
 };
+gameObjects_LevelPositions.getLinearPath = function(a,b) {
+	var path = new paths_Linear(a,b);
+	return path;
+};
 var gameObjects_Player = function(x,y,layer) {
 	this.facingDir = new kha_math_FastVector2(1,0);
 	this.speed = 100;
@@ -20161,7 +20165,7 @@ gameObjects_Player.prototype = $extend(com_framework_utils_Entity.prototype,{
 	}
 	,__class__: gameObjects_Player
 });
-var gameObjects_Saw = function(path) {
+var gameObjects_Saw = function(path,speed,playMode) {
 	com_framework_utils_Entity.call(this);
 	this.display = new com_gEngine_display_Sprite("chain");
 	this.display.timeline.playAnimation("spin");
@@ -20172,11 +20176,11 @@ var gameObjects_Saw = function(path) {
 	this.display.scaleY = 2;
 	this.collision = new com_collision_platformer_CollisionBox();
 	this.collision.userData = this;
-	this.collision.width = 40;
-	this.collision.height = 40;
+	this.collision.width = 50;
+	this.collision.height = 50;
 	states_GlobalGameData.sawCollisions.add(this.collision);
 	states_GlobalGameData.simulationLayer.addChild(this.display);
-	this.pathWalker = new paths_PathWalker(path,10,paths_PlayMode.Loop);
+	this.pathWalker = new paths_PathWalker(path,speed,playMode);
 };
 $hxClasses["gameObjects.Saw"] = gameObjects_Saw;
 gameObjects_Saw.__name__ = "gameObjects.Saw";
@@ -23099,7 +23103,11 @@ js_lib__$ArrayBuffer_ArrayBufferCompat.sliceImpl = function(begin,end) {
 	return resultArray.buffer;
 };
 var kha__$Assets_ImageList = function() {
-	this.names = ["chain","explosion","flying","game_over","ghost","ghostBullet","hero","quake","tiles2"];
+	this.names = ["chain","explosion","flying","game_over","ghost","ghostBullet","hero","quake","tiles2","win"];
+	this.winSize = 205853;
+	this.winDescription = { name : "win", original_height : 457, file_sizes : [205853], original_width : 525, files : ["win.png"], type : "image"};
+	this.winName = "win";
+	this.win = null;
 	this.tiles2Size = 146741;
 	this.tiles2Description = { name : "tiles2", original_height : 416, file_sizes : [146741], original_width : 288, files : ["tiles2.png"], type : "image"};
 	this.tiles2Name = "tiles2";
@@ -23260,6 +23268,19 @@ kha__$Assets_ImageList.prototype = {
 		this.tiles2.unload();
 		this.tiles2 = null;
 	}
+	,win: null
+	,winName: null
+	,winDescription: null
+	,winSize: null
+	,winLoad: function(done,failure) {
+		kha_Assets.loadImage("win",function(image) {
+			done();
+		},failure,{ fileName : "kha/internal/AssetsBuilder.hx", lineNumber : 136, className : "kha._Assets.ImageList", methodName : "winLoad"});
+	}
+	,winUnload: function() {
+		this.win.unload();
+		this.win = null;
+	}
 	,names: null
 	,__class__: kha__$Assets_ImageList
 };
@@ -23345,8 +23366,8 @@ kha__$Assets_SoundList.prototype = {
 };
 var kha__$Assets_BlobList = function() {
 	this.names = ["lvl1_tmx","lvl2_tmx","lvl3_tmx"];
-	this.lvl3_tmxSize = 12916;
-	this.lvl3_tmxDescription = { name : "lvl3_tmx", file_sizes : [12916], files : ["lvl3.tmx"], type : "blob"};
+	this.lvl3_tmxSize = 15674;
+	this.lvl3_tmxDescription = { name : "lvl3_tmx", file_sizes : [15674], files : ["lvl3.tmx"], type : "blob"};
 	this.lvl3_tmxName = "lvl3_tmx";
 	this.lvl3_tmx = null;
 	this.lvl2_tmxSize = 15839;
@@ -53426,9 +53447,13 @@ paths_PathWalker.prototype = {
 	,__class__: paths_PathWalker
 	,__properties__: {get_y:"get_y",get_x:"get_x"}
 };
-var states_EndGame = function(score,level) {
+var states_EndGame = function(score,level,win) {
+	if(win == null) {
+		win = false;
+	}
 	this.level = level;
 	this.score = score;
+	this.win = win;
 	com_framework_utils_State.call(this);
 };
 $hxClasses["states.EndGame"] = states_EndGame;
@@ -53437,19 +53462,32 @@ states_EndGame.__super__ = com_framework_utils_State;
 states_EndGame.prototype = $extend(com_framework_utils_State.prototype,{
 	score: null
 	,level: null
+	,win: null
 	,load: function(resources) {
-		var atlas = new com_loading_basicResources_JoinAtlas(500,500);
+		var atlas = new com_loading_basicResources_JoinAtlas(1000,1000);
 		atlas.add(new com_loading_basicResources_FontLoader("Kenney_Thick",20));
 		atlas.add(new com_loading_basicResources_ImageLoader("game_over"));
+		atlas.add(new com_loading_basicResources_ImageLoader("win"));
 		resources.add(atlas);
+		resources.add(new com_loading_basicResources_SoundLoader("WinSong",false));
 	}
 	,init: function() {
-		this.stageColor(50,0,0);
-		var image = new com_gEngine_display_Sprite("game_over");
-		image.set_smooth(false);
-		image.x = kha_System.windowWidth() * 0.33;
-		image.y = kha_System.windowHeight() * 0.1;
-		this.stage.addChild(image);
+		if(!this.win) {
+			this.stageColor(50,0,0);
+			var image = new com_gEngine_display_Sprite("game_over");
+			image.set_smooth(false);
+			image.x = kha_System.windowWidth() * 0.33;
+			image.y = kha_System.windowHeight() * 0.1;
+			this.stage.addChild(image);
+		} else {
+			this.stageColor(0,50,0);
+			var image = new com_gEngine_display_Sprite("win");
+			image.set_smooth(false);
+			image.x = kha_System.windowWidth() * 0.30;
+			image.y = kha_System.windowHeight() * 0.1;
+			this.stage.addChild(image);
+			com_soundLib_SoundManager.playMusic("WinSong");
+		}
 		var scoreText = new com_gEngine_display_Text("Kenney_Thick");
 		scoreText.set_smooth(false);
 		scoreText.x = kha_System.windowWidth() * 0.38;
@@ -53475,6 +53513,9 @@ states_EndGame.prototype = $extend(com_framework_utils_State.prototype,{
 	,update: function(dt) {
 		com_framework_utils_State.prototype.update.call(this,dt);
 		if(com_framework_utils_Input.i.isKeyCodePressed(32)) {
+			if(this.level == 4) {
+				this.level--;
+			}
 			this.changeState(new states_GameState(this.level));
 		}
 		if(com_framework_utils_Input.i.isKeyCodePressed(77)) {
@@ -53525,7 +53566,6 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		resources.add(new com_loading_basicResources_SoundLoader("sound1",false));
 		resources.add(new com_loading_basicResources_SoundLoader("sound2",false));
 		resources.add(new com_loading_basicResources_SoundLoader("sound3",false));
-		resources.add(new com_loading_basicResources_SoundLoader("WinSong",false));
 	}
 	,init: function() {
 		this.stageColor(0.5,.5,0.5);
@@ -53595,12 +53635,12 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 		this.stage.cameras[0].setTarget(this.player.collision.x,this.player.collision.y);
 		com_collision_platformer_CollisionEngine.collide(this.player.collision,this.worldMap.collision);
 		if(com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.winZone)) {
-			if(this.room < 3) {
-				this.room++;
+			this.room++;
+			if(this.room == 4) {
+				this.changeState(new states_EndGame(8,this.room,true));
 			} else {
-				this.room = 1;
+				this.changeState(new states_GameState(this.room));
 			}
-			this.changeState(new states_GameState(this.room));
 		}
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.spawnZones,$bind(this,this.playerVsSpawnZone));
 		com_collision_platformer_CollisionEngine.overlap(this.player.collision,this.deathZones,$bind(this,this.playerVsDeathZone));
@@ -53681,9 +53721,9 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 			var b = new kha_math_FastVector2(1555,332);
 			var c = new kha_math_FastVector2(1555,500);
 			var d = new kha_math_FastVector2(1230,500);
-			var saw1 = new gameObjects_Saw(gameObjects_LevelPositions.getRectangularPath(a,b,c,d));
+			var saw1 = new gameObjects_Saw(gameObjects_LevelPositions.getRectangularPath(a,b,c,d),10,paths_PlayMode.Loop);
 			this.addChild(saw1);
-			var saw2 = new gameObjects_Saw(gameObjects_LevelPositions.getRectangularPath(c,d,a,b));
+			var saw2 = new gameObjects_Saw(gameObjects_LevelPositions.getRectangularPath(c,d,a,b),10,paths_PlayMode.Loop);
 			this.addChild(saw2);
 			com_soundLib_SoundManager.playMusic("sound1");
 			break;
@@ -53692,6 +53732,42 @@ states_GameState.prototype = $extend(com_framework_utils_State.prototype,{
 			break;
 		case 3:
 			com_soundLib_SoundManager.playMusic("sound3");
+			var beginLong = new kha_math_FastVector2(325,645);
+			var endLong = new kha_math_FastVector2(1780,645);
+			var bottom = 720;
+			var top = 540;
+			var a = new kha_math_FastVector2(515,top);
+			var b = new kha_math_FastVector2(515,bottom);
+			var c = new kha_math_FastVector2(772,bottom);
+			var d = new kha_math_FastVector2(772,top);
+			var e = new kha_math_FastVector2(995,top);
+			var f = new kha_math_FastVector2(995,bottom);
+			var g = new kha_math_FastVector2(1220,bottom);
+			var h = new kha_math_FastVector2(1220,top);
+			var left = 1545;
+			var right = 1780;
+			var i = new kha_math_FastVector2(left,455);
+			var j = new kha_math_FastVector2(right,455);
+			var k = new kha_math_FastVector2(right,298);
+			var l = new kha_math_FastVector2(left,298);
+			var m = new kha_math_FastVector2(left,171);
+			var n = new kha_math_FastVector2(right,171);
+			var saw1 = new gameObjects_Saw(gameObjects_LevelPositions.getLinearPath(beginLong,endLong),10,paths_PlayMode.Loop);
+			this.addChild(saw1);
+			var saw2 = new gameObjects_Saw(gameObjects_LevelPositions.getLinearPath(a,b),5,paths_PlayMode.Pong);
+			this.addChild(saw2);
+			var saw3 = new gameObjects_Saw(gameObjects_LevelPositions.getLinearPath(c,d),5,paths_PlayMode.Pong);
+			this.addChild(saw3);
+			var saw4 = new gameObjects_Saw(gameObjects_LevelPositions.getLinearPath(e,f),5,paths_PlayMode.Pong);
+			this.addChild(saw4);
+			var saw5 = new gameObjects_Saw(gameObjects_LevelPositions.getLinearPath(g,h),5,paths_PlayMode.Pong);
+			this.addChild(saw5);
+			var saw6 = new gameObjects_Saw(gameObjects_LevelPositions.getLinearPath(i,j),5,paths_PlayMode.Pong);
+			this.addChild(saw6);
+			var saw7 = new gameObjects_Saw(gameObjects_LevelPositions.getLinearPath(k,l),5,paths_PlayMode.Pong);
+			this.addChild(saw7);
+			var saw8 = new gameObjects_Saw(gameObjects_LevelPositions.getLinearPath(m,n),5,paths_PlayMode.Pong);
+			this.addChild(saw8);
 			break;
 		}
 	}

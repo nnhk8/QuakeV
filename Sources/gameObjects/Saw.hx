@@ -13,7 +13,7 @@ class Saw extends Entity {
 	var display:Sprite;
 	var collision:CollisionBox;
 
-	public function new(path:Path) {
+	public function new(path:Path, speed:Int, playMode:PlayMode) {
 		super();
 		display = new Sprite("chain");
 		display.timeline.playAnimation("spin");
@@ -25,13 +25,13 @@ class Saw extends Entity {
 
 		collision = new CollisionBox();
 		collision.userData = this;
-		collision.width = 40;
-		collision.height = 40;
+		collision.width = 50;
+		collision.height = 50;
 
 
 		GlobalGameData.sawCollisions.add(collision);
 		GlobalGameData.simulationLayer.addChild(display);
-		pathWalker = new PathWalker(path, 10, PlayMode.Loop);
+		pathWalker = new PathWalker(path, speed, playMode);
 	}
 
 	override public function update(dt:Float):Void {

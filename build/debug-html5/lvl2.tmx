@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" width="57" height="23" tilewidth="32" tileheight="32" infinite="0" nextlayerid="12" nextobjectid="30">
+<map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" width="57" height="23" tilewidth="32" tileheight="32" infinite="0" nextlayerid="12" nextobjectid="31">
  <tileset firstgid="1" name="tiles2" tilewidth="32" tileheight="32" tilecount="117" columns="9">
   <image source="tiles2.png" width="288" height="416"/>
  </tileset>
@@ -92,7 +92,7 @@
  </layer>
  <objectgroup id="7" name="Object Layer 1">
   <object id="5" name="playerPosition" x="72.599" y="67.712" width="70.1703" height="39.1648"/>
-  <object id="6" name="winZone" x="1762.34" y="32.6893" width="59.5934" height="60.2802"/>
+  <object id="6" name="winZone" x="268.401" y="605.417" width="59.5934" height="60.2802"/>
   <object id="14" name="spawnZone" x="629.667" y="230.833" width="98" height="77">
    <properties>
     <property name="amount" type="int" value="4"/>
