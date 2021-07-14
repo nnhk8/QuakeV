@@ -62,13 +62,12 @@
  </layer>
  <objectgroup id="7" name="Object Layer 1">
   <object id="5" name="playerPosition" x="104.599" y="561.712" width="70.1703" height="39.1648"/>
-  <object id="6" name="winZone" x="259.22" y="503.962" width="81.5934" height="96.2802"/>
+  <object id="6" name="winZone" x="1738.55" y="69.2953" width="81.5934" height="88.2802"/>
   <object id="8" name="deathZone" x="196" y="643.333" width="155.333" height="59.6667">
    <properties>
     <property name="amount" type="int" value="4"/>
    </properties>
   </object>
-  <object id="10" name="powerFlower" type="powerFlower" gid="2" x="1372.33" y="102.167" width="32" height="32"/>
   <object id="12" name="spawnZone" x="587.333" y="619.833" width="92.6667" height="46.3333">
    <properties>
     <property name="amount" type="int" value="4"/>

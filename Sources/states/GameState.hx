@@ -53,6 +53,11 @@ class GameState extends State {
 
 	var room:Int;
 
+	var lifeText:Text;
+	var levelText:Text;
+	var flyPowerUpText:Text;
+	var ghostBulletPowerUpText:Text;
+
 	var enemyCollision:CollisionGroup = new CollisionGroup();
 	var sawCollisions:CollisionGroup = new CollisionGroup();
 	var flyPowerUpCollisions:CollisionGroup = new CollisionGroup();
@@ -119,13 +124,38 @@ class GameState extends State {
 		createTouchJoystick();
 		this.buildLevel();
 
-		var scoreText = new Text("Kenney_Thick");
-		scoreText.smooth = false;
-		scoreText.x = Screen.getWidth() * 0.38;
-		scoreText.y = Screen.getHeight() * 0.6;
-		scoreText.text = "Final Score ";
-		scoreText.set_color(Color.Black);
-		staticLayer.addChild(scoreText);
+		
+		lifeText = new Text("Kenney_Thick");
+		lifeText.smooth = false;
+		lifeText.x = Screen.getWidth() * 0.1;
+		lifeText.y = Screen.getHeight() * 0.1;
+		lifeText.text = "Lifes "+GlobalGameData.playerLifes;
+		lifeText.set_color(Color.Red);
+		staticLayer.addChild(lifeText);
+
+		levelText = new Text("Kenney_Thick");
+		levelText.smooth = false;
+		levelText.x = Screen.getWidth() * 0.9;
+		levelText.y = Screen.getHeight() * 0.1;
+		levelText.text = "Level "+room;
+		levelText.set_color(Color.Blue);
+		staticLayer.addChild(levelText);
+
+		flyPowerUpText = new Text("Kenney_Thick");
+		flyPowerUpText.smooth = false;
+		flyPowerUpText.x = Screen.getWidth() * 0.01;
+		flyPowerUpText.y = Screen.getHeight() * 0.94;
+		flyPowerUpText.text = "Fly PowerUp ";
+		flyPowerUpText.set_color(Color.Green);
+		staticLayer.addChild(flyPowerUpText);
+
+		ghostBulletPowerUpText = new Text("Kenney_Thick");
+		ghostBulletPowerUpText.smooth = false;
+		ghostBulletPowerUpText.x = Screen.getWidth() * 0.01;
+		ghostBulletPowerUpText.y = Screen.getHeight() * 0.97;
+		ghostBulletPowerUpText.text = "Ghost Bullet Damage PowerUp ";
+		ghostBulletPowerUpText.set_color(Color.Green);
+		staticLayer.addChild(ghostBulletPowerUpText);
 	}
 
 	function parseTileLayers(layerTilemap:Tilemap, tileLayer:TmxTileLayer) {
@@ -141,6 +171,7 @@ class GameState extends State {
 				player = new Player(object.x, object.y, simulationLayer);
 				addChild(player);
 				GlobalGameData.player = player;
+				GlobalGameData.playerLifes=3;
 			}
 		} else if (compareName(object, "winZone")) {
 			winZone = new CollisionBox();
@@ -165,6 +196,9 @@ class GameState extends State {
 
 	override function update(dt:Float) {
 		super.update(dt);
+		lifeText.text = "Lifes "+GlobalGameData.playerLifes;
+		flyPowerUpText.text = "Fly PowerUp "+Std.string(player.flyTime).charAt(0)+ " of " + player.flyTimeMax;
+		ghostBulletPowerUpText.text = "Ghost Bullet Damage PowerUp "+Std.string(GlobalGameData.ghostBulletsTime).charAt(0) + " of " + GlobalGameData.ghostBulletsTimeMax;
 
 		if (GlobalGameData.ghostBullets) {
 			GlobalGameData.ghostBulletsTime += dt;
@@ -198,11 +232,25 @@ class GameState extends State {
 	}
 
 	function playerVsGhost(playerC:ICollider, ghostC:ICollider) {
-		changeState(new EndGame(8, room));
+		GlobalGameData.playerLifes--;
+		if (GlobalGameData.playerLifes < 1) {
+			changeState(new EndGame(8, room));
+		} else {
+			var enemey:Ghost = ghostC.userData;
+			enemey.damage();
+		}
 	}
 
 	function playerVsSaw(playerC:ICollider, sawC:ICollider) {
-		changeState(new EndGame(8, room));
+		var saw:Saw = sawC.userData;
+		if (saw.damage){
+			GlobalGameData.playerLifes--;
+			if (GlobalGameData.playerLifes < 1) {
+				changeState(new EndGame(8, room));
+			} else {
+				saw.noDamage();
+			}
+		}
 	}
 
 	function playerVsSpawnZone(playerC:ICollider, spawnZoneC:ICollider) {

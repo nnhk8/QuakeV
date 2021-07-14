@@ -10,7 +10,7 @@ class GlobalGameData {
 	public static var simulationLayer:Layer;
 	public static var staticLayer:StaticLayer;
 	public static var player:Player;
-	public static var winState:Bool;
+	public static var playerLifes:Int;
 
 	public static var sawCollisions:CollisionGroup;
 	public static var enemyCollisions:CollisionGroup;
@@ -22,10 +22,12 @@ class GlobalGameData {
 	public static var ghostBulletsTimeMax:Float = 20;
 
 
+
+
 	static public function destroy() {
 		simulationLayer = null;
 		player = null;
-		winState = true;
+		playerLifes = null;
 		sawCollisions = null;
 		flyPowerUpCollisions = null;
 		ghostBulletsCollisions = null;
