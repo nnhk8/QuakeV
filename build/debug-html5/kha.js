@@ -49550,8 +49550,14 @@ kha_input_Pen.prototype = {
 	notify: function(downListener,upListener,moveListener) {
 		this.notifyWindowed(0,downListener,upListener,moveListener);
 	}
+	,notifyEraser: function(eraserDownListener,eraserUpListener,eraserMoveListener) {
+		this.notifyEraserWindowed(0,eraserDownListener,eraserUpListener,eraserMoveListener);
+	}
 	,remove: function(downListener,upListener,moveListener) {
 		this.removeWindowed(0,downListener,upListener,moveListener);
+	}
+	,removeEraser: function(eraserDownListener,eraserUpListener,eraserMoveListener) {
+		this.removeEraserWindowed(0,eraserDownListener,eraserUpListener,eraserMoveListener);
 	}
 	,notifyWindowed: function(windowId,downListener,upListener,moveListener) {
 		if(downListener != null) {
@@ -49576,6 +49582,29 @@ kha_input_Pen.prototype = {
 			this.windowMoveListeners[windowId].push(moveListener);
 		}
 	}
+	,notifyEraserWindowed: function(windowId,eraserDownListener,eraserUpListener,eraserMoveListener) {
+		if(eraserDownListener != null) {
+			if(this.windowEraserDownListeners == null) {
+				this.windowEraserDownListeners = [];
+			}
+			while(this.windowEraserDownListeners.length <= windowId) this.windowEraserDownListeners.push([]);
+			this.windowEraserDownListeners[windowId].push(eraserDownListener);
+		}
+		if(eraserUpListener != null) {
+			if(this.windowEraserUpListeners == null) {
+				this.windowEraserUpListeners = [];
+			}
+			while(this.windowEraserUpListeners.length <= windowId) this.windowEraserUpListeners.push([]);
+			this.windowEraserUpListeners[windowId].push(eraserUpListener);
+		}
+		if(eraserMoveListener != null) {
+			if(this.windowEraserMoveListeners == null) {
+				this.windowEraserMoveListeners = [];
+			}
+			while(this.windowEraserMoveListeners.length <= windowId) this.windowEraserMoveListeners.push([]);
+			this.windowEraserMoveListeners[windowId].push(eraserMoveListener);
+		}
+	}
 	,removeWindowed: function(windowId,downListener,upListener,moveListener) {
 		if(downListener != null && this.windowDownListeners != null) {
 			if(windowId < this.windowDownListeners.length) {
@@ -49593,9 +49622,29 @@ kha_input_Pen.prototype = {
 			}
 		}
 	}
+	,removeEraserWindowed: function(windowId,eraserDownListener,eraserUpListener,eraserMoveListener) {
+		if(eraserDownListener != null && this.windowEraserDownListeners != null) {
+			if(windowId < this.windowEraserDownListeners.length) {
+				HxOverrides.remove(this.windowEraserDownListeners[windowId],eraserDownListener);
+			}
+		}
+		if(eraserUpListener != null && this.windowEraserUpListeners != null) {
+			if(windowId < this.windowEraserUpListeners.length) {
+				HxOverrides.remove(this.windowEraserUpListeners[windowId],eraserUpListener);
+			}
+		}
+		if(eraserMoveListener != null && this.windowEraserMoveListeners != null) {
+			if(windowId < this.windowEraserMoveListeners.length) {
+				HxOverrides.remove(this.windowEraserMoveListeners[windowId],eraserMoveListener);
+			}
+		}
+	}
 	,windowDownListeners: null
 	,windowUpListeners: null
 	,windowMoveListeners: null
+	,windowEraserDownListeners: null
+	,windowEraserUpListeners: null
+	,windowEraserMoveListeners: null
 	,sendDownEvent: function(windowId,x,y,pressure) {
 		if(this.windowDownListeners != null) {
 			var _g = 0;
@@ -49622,6 +49671,39 @@ kha_input_Pen.prototype = {
 		if(this.windowMoveListeners != null) {
 			var _g = 0;
 			var _g1 = this.windowMoveListeners[windowId];
+			while(_g < _g1.length) {
+				var listener = _g1[_g];
+				++_g;
+				listener(x,y,pressure);
+			}
+		}
+	}
+	,sendEraserDownEvent: function(windowId,x,y,pressure) {
+		if(this.windowEraserDownListeners != null) {
+			var _g = 0;
+			var _g1 = this.windowEraserDownListeners[windowId];
+			while(_g < _g1.length) {
+				var listener = _g1[_g];
+				++_g;
+				listener(x,y,pressure);
+			}
+		}
+	}
+	,sendEraserUpEvent: function(windowId,x,y,pressure) {
+		if(this.windowEraserUpListeners != null) {
+			var _g = 0;
+			var _g1 = this.windowEraserUpListeners[windowId];
+			while(_g < _g1.length) {
+				var listener = _g1[_g];
+				++_g;
+				listener(x,y,pressure);
+			}
+		}
+	}
+	,sendEraserMoveEvent: function(windowId,x,y,pressure) {
+		if(this.windowEraserMoveListeners != null) {
+			var _g = 0;
+			var _g1 = this.windowEraserMoveListeners[windowId];
 			while(_g < _g1.length) {
 				var listener = _g1[_g];
 				++_g;

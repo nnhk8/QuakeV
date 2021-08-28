@@ -8,6 +8,7 @@
             "runtimeExecutable": "${command:kha.findKhaElectron}",
             "runtimeArgs": [
                 "--no-sandbox",
+                "--force-device-scale-factor=1",
                 "."
             ],
             "outFiles": [

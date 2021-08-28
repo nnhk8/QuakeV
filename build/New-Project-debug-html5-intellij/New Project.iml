@@ -15,23 +15,23 @@
     <output url="file://$MODULE_DIR$/../debug-html5" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../..">
-      <sourceFolder url="file://C:\Users\nnais\Documents\ORT\Programacion de videojuegos\Kha\Sources" isTestSource="false" />
-      <sourceFolder url="file://C:\Users\nnais\Documents\ORT\Programacion de videojuegos\Kha\Backends\HTML5" isTestSource="false" />
-      <sourceFolder url="file://C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\Sources" isTestSource="false" />
-      <sourceFolder url="file://C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\hxGeomAlgo\Sources" isTestSource="false" />
-      <sourceFolder url="file://C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\Format\Sources" isTestSource="false" />
-      <sourceFolder url="file://C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Sources" isTestSource="false" />
-      <sourceFolder url="file://C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\Libraries\tiled" isTestSource="false" />
+      <sourceFolder url="file://c:\Users\marcelo\.vscode\extensions\kodetech.kha-21.7.2\Kha\Sources" isTestSource="false" />
+      <sourceFolder url="file://c:\Users\marcelo\.vscode\extensions\kodetech.kha-21.7.2\Kha\Backends\HTML5" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\marcelo\Documents\QuakeV\Sources" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\marcelo\Documents\QuakeV\khawy\Libraries\hxGeomAlgo\Sources" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\marcelo\Documents\QuakeV\khawy\Libraries\Format\Sources" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\marcelo\Documents\QuakeV\khawy\Sources" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\marcelo\Documents\QuakeV\Libraries\tiled" isTestSource="false" />
 
     </content>
     <content url="file://Libraries/hxGeomAlgo">
-      <sourceFolder url="file://C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\hxGeomAlgo" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\marcelo\Documents\QuakeV\khawy\Libraries\hxGeomAlgo" isTestSource="false" />
     </content>
     <content url="file://Libraries/Format">
-      <sourceFolder url="file://C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\Format" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\marcelo\Documents\QuakeV\khawy\Libraries\Format" isTestSource="false" />
     </content>
     <content url="file://Libraries/tiled">
-      <sourceFolder url="file://C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\Libraries\tiled" isTestSource="false" />
+      <sourceFolder url="file://C:\Users\marcelo\Documents\QuakeV\Libraries\tiled" isTestSource="false" />
     </content>
     
     <orderEntry type="jdk" jdkName="Haxe 3.2.0" jdkType="Haxe toolkit" />

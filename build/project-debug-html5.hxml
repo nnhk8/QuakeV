@@ -1,12 +1,12 @@
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\Kha\Sources
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\Kha\Backends\HTML5
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\Sources
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\hxGeomAlgo\Sources
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\Format\Sources
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Sources
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\Libraries\tiled
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\hxGeomAlgo
--cp C:\Users\nnais\Documents\ORT\Programacion de videojuegos\ProgVideoJuegos2\khawy\Libraries\Format
+-cp c:\Users\marcelo\.vscode\extensions\kodetech.kha-21.7.2\Kha\Sources
+-cp c:\Users\marcelo\.vscode\extensions\kodetech.kha-21.7.2\Kha\Backends\HTML5
+-cp C:\Users\marcelo\Documents\QuakeV\Sources
+-cp C:\Users\marcelo\Documents\QuakeV\khawy\Libraries\hxGeomAlgo\Sources
+-cp C:\Users\marcelo\Documents\QuakeV\khawy\Libraries\Format\Sources
+-cp C:\Users\marcelo\Documents\QuakeV\khawy\Sources
+-cp C:\Users\marcelo\Documents\QuakeV\Libraries\tiled
+-cp C:\Users\marcelo\Documents\QuakeV\khawy\Libraries\hxGeomAlgo
+-cp C:\Users\marcelo\Documents\QuakeV\khawy\Libraries\Format
 -D hxcpp_smart_strings
 -D debugInfo
 -D hxGeomAlgo
